@@ -1,8 +1,8 @@
 #include "GameManager.h"
 #include "SDLInit.h"
 
-extern SDL_Window* window;
-extern SDL_Surface* screenSurface;
+extern SDL_Window* gWindow;
+extern SDL_Renderer* gRenderer;
 
 //Screen dimension constants
 extern int SCREEN_WIDTH;		//TODO: currently not using...
@@ -19,7 +19,11 @@ bool GameManager::Cleanup(){
 	return sdlInit.Cleanup();
 }
 
+void GameManager::Render(){
+	sdlInit.Update();
+}
+
 //TODO: Add deltatime later...
-void GameManager::Update(){
+void GameManager::Update() {
 	sdlInit.Update();
 }
