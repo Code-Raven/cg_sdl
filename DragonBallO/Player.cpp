@@ -1,11 +1,9 @@
 #include "Player.h"
 
-extern int gRightAxis;
-extern int gLeftAxis;
-extern int gUpAxis;
-extern int gDownAxis;
+extern int gHorizVelocity;
+extern int gVertVelocity;
 
 void Player::Move() {
-	mXPos += gRightAxis + gLeftAxis;
-	mYPos += gUpAxis + gDownAxis;
+	mXPos += gHorizVelocity;
+	mYPos += gVertVelocity;
 }

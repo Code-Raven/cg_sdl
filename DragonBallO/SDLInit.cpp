@@ -14,10 +14,8 @@ SDL_Renderer* gRenderer = NULL;
 bool gQuitGame = false;
 
 //Key input...
-int gRightAxis = 0;
-int gLeftAxis = 0;
-int gUpAxis = 0;
-int gDownAxis = 0;
+int gHorizVelocity = 0;
+int gVertVelocity = 0;
 
 namespace {
 	SDL_Event event;
@@ -26,46 +24,32 @@ namespace {
 void HandleKeyboardEvents() {
 	/* Poll for events */
 	while (SDL_PollEvent(&event)) {
-
 		switch (event.type) {
 			/* Keyboard event */
 			/* Pass the event data onto PrintKeyInfo() */
 		case SDL_KEYDOWN:
-			switch (event.key.keysym.sym) {
-			case SDLK_w:
-				gUpAxis = -1;
-				break;
-			case SDLK_s:
-				gDownAxis = 1;
-				break;
-			case SDLK_a:
-				gLeftAxis = -1;
-				break;
-			case SDLK_d:
-				gRightAxis = 1;
-				break;
-			default:
-				break;
+			if (event.key.repeat == 0) {
+				switch (event.key.keysym.sym) {
+				case SDLK_w: gVertVelocity -= 1; break;		//up...
+				case SDLK_s: gVertVelocity += 1; break;		//down...
+				case SDLK_a: gHorizVelocity -= 1; break;	//left...
+				case SDLK_d: gHorizVelocity += 1; break;	//right...
+				default: break;
+				}
 			}
 			break;
 
 		case SDL_KEYUP:
-			switch (event.key.keysym.sym) {
-			case SDLK_w:
-				gUpAxis = 0;
-				break;
-			case SDLK_s:
-				gDownAxis = 0;
-				break;
-			case SDLK_a:
-				gLeftAxis = 0;
-				break;
-			case SDLK_d:
-				gRightAxis = 0;
-				break;
-			default:
-				break;
+			if (event.key.repeat == 0) {
+				switch (event.key.keysym.sym) {
+				case SDLK_w: gVertVelocity += 1; break;		//up...
+				case SDLK_s: gVertVelocity -= 1; break;		//down...
+				case SDLK_a: gHorizVelocity += 1; break;	//left...
+				case SDLK_d: gHorizVelocity -= 1; break;	//right...
+				default: break;
+				}
 			}
+
 			break;
 
 			/* SDL_QUIT event (window close) */
@@ -146,7 +130,7 @@ void SDLInit::LoadTexture(Entity &entity) {
 		if (newTexture == NULL) {
 			printf("Unable to create texture from %s! SDL Error: %s\n", filePath, SDL_GetError());
 		}
-		//else {
+		//else {	//TODO: Keep this around for reference...
 		//	//Get image dimensions
 		//	entity.mWidth = loadedSurface->w;
 		//	entity.mHeight = loadedSurface->h;
@@ -182,7 +166,7 @@ void SDLInit::CleanupTexture(Entity &entity) {
 
 void SDLInit::DrawTexture(Entity &entity) {
 	////Set rendering space and render to screen
-	SDL_Rect renderQuad = {entity.mXPos, entity.mYPos,
+	SDL_Rect renderRect = {entity.mXPos, entity.mYPos,
 		entity.mWidth, entity.mHeight };
 
 	////Set clip rendering dimensions
@@ -193,7 +177,7 @@ void SDLInit::DrawTexture(Entity &entity) {
 
 	////Render to screen
 	SDL_RenderCopy(gRenderer, entity.mTexture,
-		NULL, &renderQuad);
+		NULL, &renderRect);
 }
 
 void SDLInit::Render() {
