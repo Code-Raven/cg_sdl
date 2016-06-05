@@ -9,6 +9,8 @@
 //Texture wrapper class
 class LTexture
 {
+	friend class SDLInit;
+
 public:
 	//Initializes variables
 	LTexture();
@@ -41,6 +43,8 @@ public:
 private:
 	//The actual hardware texture
 	SDL_Texture* mTexture;
+
+	char* mTexturePath;
 
 	//Image dimensions
 	int mWidth;

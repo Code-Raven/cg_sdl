@@ -2,6 +2,7 @@
 
 class Entity{
 
+	friend class SDLInit;
 
 	protected:
 		std::string name;
