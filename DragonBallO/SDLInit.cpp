@@ -10,6 +10,75 @@ SDL_Window* gWindow = NULL;
 //The window renderer
 SDL_Renderer* gRenderer = NULL;
 
+//Checked in main...
+bool gQuitGame = false;
+
+//Key input...
+int gRightAxis = 0;
+int gLeftAxis = 0;
+int gUpAxis = 0;
+int gDownAxis = 0;
+
+namespace {
+	SDL_Event event;
+}
+
+void HandleKeyboardEvents() {
+	/* Poll for events */
+	while (SDL_PollEvent(&event)) {
+
+		switch (event.type) {
+			/* Keyboard event */
+			/* Pass the event data onto PrintKeyInfo() */
+		case SDL_KEYDOWN:
+			switch (event.key.keysym.sym) {
+			case SDLK_w:
+				gUpAxis = -1;
+				break;
+			case SDLK_s:
+				gDownAxis = 1;
+				break;
+			case SDLK_a:
+				gLeftAxis = -1;
+				break;
+			case SDLK_d:
+				gRightAxis = 1;
+				break;
+			default:
+				break;
+			}
+			break;
+
+		case SDL_KEYUP:
+			switch (event.key.keysym.sym) {
+			case SDLK_w:
+				gUpAxis = 0;
+				break;
+			case SDLK_s:
+				gDownAxis = 0;
+				break;
+			case SDLK_a:
+				gLeftAxis = 0;
+				break;
+			case SDLK_d:
+				gRightAxis = 0;
+				break;
+			default:
+				break;
+			}
+			break;
+
+			/* SDL_QUIT event (window close) */
+		case SDL_QUIT:
+			gQuitGame = true;
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
 bool SDLInit::Setup(){
 	bool success = true;
 
@@ -56,9 +125,9 @@ bool SDLInit::Setup(){
 	return success;
 }
 
-bool SDLInit::LoadTexture(LTexture &lTexture) {
+void SDLInit::LoadTexture(Entity &entity) {
 	//This is how we get our file name...
-	const char* filePath = lTexture.mTexturePath;
+	const char* filePath = entity.mTexturePath;
 
 	//The final texture
 	SDL_Texture* newTexture = NULL;
@@ -77,44 +146,44 @@ bool SDLInit::LoadTexture(LTexture &lTexture) {
 		if (newTexture == NULL) {
 			printf("Unable to create texture from %s! SDL Error: %s\n", filePath, SDL_GetError());
 		}
-		else {
-			//Get image dimensions
-			lTexture.mWidth = loadedSurface->w;
-			lTexture.mHeight = loadedSurface->h;
-		}
+		//else {
+		//	//Get image dimensions
+		//	entity.mWidth = loadedSurface->w;
+		//	entity.mHeight = loadedSurface->h;
+		//}
 
 		//Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
 	}
 
 	//Return success
-	lTexture.mTexture = newTexture;
-	return newTexture != NULL;
+	entity.mTexture = newTexture;
 }
 
-void SDLInit::SetColor(LTexture &lTexture, Uint8 red, Uint8 green, Uint8 blue) {
+void SDLInit::SetColor(Entity &entity, Uint8 red, Uint8 green, Uint8 blue) {
 	//Modulate texture rgb
-	SDL_SetTextureColorMod(lTexture.mTexture, red, green, blue);
+	SDL_SetTextureColorMod(entity.mTexture, red, green, blue);
 }
 
-void SDLInit::SetBlendMode(LTexture &lTexture, SDL_BlendMode blending) {
+void SDLInit::SetBlendMode(Entity &entity, SDL_BlendMode blending) {
 	//Set blending function
-	SDL_SetTextureBlendMode(lTexture.mTexture, blending);
+	SDL_SetTextureBlendMode(entity.mTexture, blending);
 }
 
-void SDLInit::SetAlpha(LTexture &lTexture, Uint8 alpha) {
+void SDLInit::SetAlpha(Entity &entity, Uint8 alpha) {
 	//Modulate texture alpha
-	SDL_SetTextureAlphaMod(lTexture.mTexture, alpha);
+	SDL_SetTextureAlphaMod(entity.mTexture, alpha);
 }
 
-void SDLInit::CleanupTexture(LTexture &lTexture) {
-	SDL_DestroyTexture(lTexture.mTexture);
-	lTexture.mTexture = NULL;
+void SDLInit::CleanupTexture(Entity &entity) {
+	SDL_DestroyTexture(entity.mTexture);
+	entity.mTexture = NULL;
 }
 
-void SDLInit::Render(LTexture &lTexture) {
+void SDLInit::DrawTexture(Entity &entity) {
 	////Set rendering space and render to screen
-	//SDL_Rect renderQuad = { x, y, mWidth, mHeight };
+	SDL_Rect renderQuad = {entity.mXPos, entity.mYPos,
+		entity.mWidth, entity.mHeight };
 
 	////Set clip rendering dimensions
 	//if (clip != NULL) {
@@ -123,25 +192,37 @@ void SDLInit::Render(LTexture &lTexture) {
 	//}
 
 	////Render to screen
-	//SDL_RenderCopy(gRenderer, mTexture, clip, &renderQuad);
+	SDL_RenderCopy(gRenderer, entity.mTexture,
+		NULL, &renderQuad);
+}
+
+void SDLInit::Render() {
+	//Clear screen
+	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	SDL_RenderClear(gRenderer);
 }
 
 //TODO: add delta time to update...
 void SDLInit::Update(){
-	//Update the surface
-	SDL_UpdateWindowSurface( gWindow );
+	//Checks for key presses...
+	HandleKeyboardEvents();
+
+	//Update screen
+	SDL_RenderPresent(gRenderer);
+
+	SDL_Delay(4);
 	//Wait two seconds
 	//SDL_Delay( 2000 );
 }
 
-bool SDLInit::Cleanup(){
-	bool initSuccess = true;
+void SDLInit::Cleanup(){
+	SDL_DestroyRenderer(gRenderer);
+	SDL_DestroyWindow(gWindow);
 
-	//Destroy window
-	SDL_DestroyWindow( gWindow );
+	gWindow = NULL;
+	gRenderer = NULL;
 
 	//Quit SDL subsystems
+	IMG_Quit();
 	SDL_Quit();
-
-	return initSuccess;
 }

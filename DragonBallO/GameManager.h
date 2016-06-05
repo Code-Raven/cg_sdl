@@ -3,8 +3,8 @@
 class GameManager{
 	public:
 		bool Init();
-		bool Cleanup();
+		void Cleanup();
 
-		void Render();
 		void Update();
+		void Render();
 };
