@@ -130,11 +130,10 @@ void SDLInit::LoadTexture(Entity &entity) {
 		if (newTexture == NULL) {
 			printf("Unable to create texture from %s! SDL Error: %s\n", filePath, SDL_GetError());
 		}
-		//else {	//TODO: Keep this around for reference...
-		//	//Get image dimensions
-		//	entity.mWidth = loadedSurface->w;
-		//	entity.mHeight = loadedSurface->h;
-		//}
+		else {	//get image dimensions. Can call Entity.SetSize to override...
+			entity.mWidth = loadedSurface->w;
+			entity.mHeight = loadedSurface->h;
+		}
 
 		//Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
@@ -165,7 +164,7 @@ void SDLInit::CleanupTexture(Entity &entity) {
 }
 
 void SDLInit::DrawTexture(Entity &entity) {
-	////Set rendering space and render to screen
+	//Set rendering space and render to screen
 	SDL_Rect renderRect = {entity.mXPos, entity.mYPos,
 		entity.mWidth, entity.mHeight };
 
@@ -175,9 +174,9 @@ void SDLInit::DrawTexture(Entity &entity) {
 	//	renderQuad.h = clip->h;
 	//}
 
-	////Render to screen
+	//Render to screen
 	SDL_RenderCopy(gRenderer, entity.mTexture,
-		NULL, &renderRect);
+		entity.GetSpriteClip(), &renderRect);
 }
 
 void SDLInit::Render() {

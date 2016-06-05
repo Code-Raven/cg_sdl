@@ -18,19 +18,20 @@ namespace {
 
 void InitEntities() {
 	//Setting path names...
-	player.SetTexturePath("textures/link.png");
+	player.SetTexturePath("textures/link_sheet.png");
+
+	//Loading textures...
+	sdlInit.LoadTexture(player);
 
 	//Setting position information...
 	player.SetPosition(0, 0);
 
 	//Setting size information...
-	player.SetSize(32, 32);
+	player.SetSize(50, 50);
 
 	//Set sprite sheet information...
-	//player.SetSrcRect({ 0, 0, 32, 32 });
-
-	//Loading textures...
-	sdlInit.LoadTexture(player);
+	player.InitSpriteSheet(0, 14, 6);
+	player.SetSpriteClip(0, 0, 30, 30, 0);
 }
 
 bool GameManager::Init(){
