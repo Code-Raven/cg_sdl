@@ -1,5 +1,7 @@
 #include "SDLInit.h"
 
+#define MILLI_PER_SEC 1000.f
+
 #define BG_R 0x68
 #define BG_G 0xB1
 #define BG_B 0x38
@@ -14,6 +16,9 @@ SDL_Window* gWindow = NULL;
 
 //The window renderer
 SDL_Renderer* gRenderer = NULL;
+
+//In milliseconds...
+float gDeltaTime = 0.f;
 
 //Checked in main...
 bool gQuitGame = false;
@@ -170,7 +175,7 @@ void SDLInit::CleanupTexture(Entity &entity) {
 
 void SDLInit::DrawTexture(Entity &entity) {
 	//Set rendering space and render to screen
-	SDL_Rect renderRect = {entity.mXPos, entity.mYPos,
+	SDL_Rect renderRect = {(int)entity.mXPos, (int)entity.mYPos,
 		entity.mWidth, entity.mHeight };
 
 	////Set clip rendering dimensions
@@ -192,13 +197,18 @@ void SDLInit::Render() {
 
 //TODO: add delta time to update...
 void SDLInit::Update(){
+	//Updating gDeltaTime in milliseconds...
+	static Uint32 lastTime = 0;
+	Uint32 runningTime = SDL_GetTicks();
+	gDeltaTime = (runningTime - lastTime)/MILLI_PER_SEC;
+	lastTime = runningTime;
+
 	//Checks for key presses...
 	HandleKeyboardEvents();
 
 	//Update screen
 	SDL_RenderPresent(gRenderer);
 
-	SDL_Delay(4);
 	//Wait two seconds
 	//SDL_Delay( 2000 );
 }

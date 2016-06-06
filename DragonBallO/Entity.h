@@ -9,13 +9,14 @@ using uInt = unsigned int;
 
 public:
 	void SetTexturePath(const char* texturePath);
-	void SetPosition(int x, int y);
+	void SetPosition(float x, float y);
 	void SetSize(int width, int height);
 
 	//Call InitSPriteSheet before calling SetSpriteClip...
 	void InitSpriteSheet(uInt startClipIndex, uInt numSpriteCLipsX, uInt numSpriteClipsY);
 	void SetSpriteClip(int x, int y, uInt w, uInt h, uInt index);
 
+	//TODO: Clean this up using delete [] array
 	SDL_Rect* GetSpriteClip();
 
 protected:
@@ -23,7 +24,7 @@ protected:
 	SDL_Texture* mTexture;
 	const char* mTexturePath;
 
-	int mXPos{0}, mYPos{0};
+	float mXPos{0}, mYPos{0};
 	int mWidth{0}, mHeight{0};
 
 	int mSpriteClipIndex{0};

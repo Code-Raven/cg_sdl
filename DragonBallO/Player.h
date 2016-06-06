@@ -4,5 +4,4 @@
 class Player : public Living {
 public:
 	void Move() override;
-
 };

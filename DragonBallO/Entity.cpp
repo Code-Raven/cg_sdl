@@ -4,7 +4,7 @@ void Entity::SetTexturePath(const char* texturePath) {
 	mTexturePath = texturePath;
 }
 
-void Entity::SetPosition(int x, int y) {
+void Entity::SetPosition(float x, float y) {
 	mXPos = x;
 	mYPos = y;
 }
