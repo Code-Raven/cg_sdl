@@ -14,20 +14,25 @@ static SDLInit sdlInit;
 
 namespace {
 	Player player;
+	Entity tree;
 }
 
 void InitEntities() {
 	//Setting path names...
 	player.SetTexturePath("textures/link_sheet.png");
+	tree.SetTexturePath("textures/tree_green.gif");
 
 	//Loading textures...
 	sdlInit.LoadTexture(player);
+	sdlInit.LoadTexture(tree);
 
 	//Setting position information...
 	player.SetPosition(0, 0);
+	tree.SetPosition(200, 300);
 
 	//Setting size information...
 	player.SetSize(50, 50);
+	tree.SetSize(64, 78);
 
 	//Set sprite sheet information...
 	player.InitSpriteSheet(0, 14, 6);
@@ -52,6 +57,7 @@ bool GameManager::Init(){
 
 void GameManager::Cleanup(){
 	sdlInit.CleanupTexture(player);
+	sdlInit.CleanupTexture(tree);
 	sdlInit.Cleanup();
 }
 
@@ -63,5 +69,6 @@ void GameManager::Update() {
 
 void GameManager::Render(){
 	sdlInit.Render();
+	sdlInit.DrawTexture(tree);
 	sdlInit.DrawTexture(player);
 }

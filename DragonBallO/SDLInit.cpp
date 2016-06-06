@@ -1,5 +1,10 @@
 #include "SDLInit.h"
 
+#define BG_R 0x68
+#define BG_G 0xB1
+#define BG_B 0x38
+#define BG_A 0xFF
+
 //Screen dimension constants
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -180,8 +185,8 @@ void SDLInit::DrawTexture(Entity &entity) {
 }
 
 void SDLInit::Render() {
-	//Clear screen
-	SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+	//Clear screen	68B13A
+	SDL_SetRenderDrawColor(gRenderer, BG_R, BG_G, BG_B, BG_A);
 	SDL_RenderClear(gRenderer);
 }
 
