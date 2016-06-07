@@ -8,6 +8,10 @@ friend class SDLInit;
 using uInt = unsigned int;
 
 public:
+	//Needs to be virtual so that derived destructor gets called...
+	virtual ~Entity();
+
+public:
 	void SetTexturePath(const char* texturePath);
 	void SetPosition(float x, float y);
 	void SetSize(int width, int height);
@@ -15,6 +19,9 @@ public:
 	//Call InitSPriteSheet before calling SetSpriteClip...
 	void InitSpriteSheet(uInt startClipIndex, uInt numSpriteCLipsX, uInt numSpriteClipsY);
 	void SetSpriteClip(int x, int y, uInt w, uInt h, uInt index);
+
+	void SetCollision(bool blocking) { mCollisionBlocks = blocking; }
+	bool CheckCollision(Entity &other);
 
 	//TODO: Clean this up using delete [] array
 	SDL_Rect* GetSpriteClip();
@@ -27,10 +34,17 @@ protected:
 	float mXPos{0}, mYPos{0};
 	int mWidth{0}, mHeight{0};
 
+	//If this entity can move, it needs a move speed...
+	float mMoveSpeed{ 140.f };
+
+	//For pushing back entity (if collision succeeds)
+	bool mCollisionBlocks{false};
+
 	int mSpriteClipIndex{0};
 	int mNumSpriteClips{0};
 	int mNumSpriteClipsX{0};
 	int mNumSpriteClipsY{0};
 
-	SDL_Rect *mSpriteCLips = NULL;
+	//nullptr is better for ambiguity purposes...
+	SDL_Rect *mSpriteCLips = nullptr;
 };

@@ -3,6 +3,10 @@
 
 class Living : public Entity {
 public:
+	//Base class destructor is ALWAYS implicitly called...
+	virtual ~Living() override {}
+
+public:
 	virtual void Move() = 0;
 
 	void SetHealth(int health, int maxHealth);
@@ -13,8 +17,6 @@ public:
 protected:
 	int mMaxHealth{100};
 	int mHealth{100};
-
-	float mMoveSpeed{160.f};
 
 	//TODO: add typedef struct for inventory...
 	//TODO: struct for weapons to attach and give damage...

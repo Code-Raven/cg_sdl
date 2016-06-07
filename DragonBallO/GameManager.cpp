@@ -44,6 +44,9 @@ void InitEntities() {
 	player.SetSpriteClip(120, 31, 30, 30, 18);		//right move...
 	player.SetSpriteClip(60, 1, 30, 30, 2);			//left...
 	player.SetSpriteClip(60, 31, 30, 30, 16);		//left move...
+
+	//Setup collision...
+	tree.SetCollision(true);
 }
 
 bool GameManager::Init(){
@@ -64,6 +67,8 @@ void GameManager::Cleanup(){
 //TODO: Add deltatime later...
 void GameManager::Update() {
 	player.Move();
+	(void)tree.CheckCollision(player);
+
 	sdlInit.Update();
 }
 

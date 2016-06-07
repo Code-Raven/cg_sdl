@@ -1,5 +1,12 @@
 #include "Entity.h"
 
+Entity::~Entity() {
+	if (mSpriteCLips == nullptr) {
+		delete[] mSpriteCLips;
+		mSpriteCLips = nullptr;
+	}
+}
+
 void Entity::SetTexturePath(const char* texturePath) {
 	mTexturePath = texturePath;
 }
@@ -37,6 +44,36 @@ void Entity::SetSpriteClip(int x, int y, uInt w, uInt h, uInt index) {
 	int i = index % mNumSpriteClips;
 	mSpriteCLips[i].x = x; mSpriteCLips[i].y = y;
 	mSpriteCLips[i].w = w; mSpriteCLips[i].h = h;
+}
+
+bool Entity::CheckCollision(Entity &other) {
+	float leftDist = other.mXPos - mXPos;
+	float upDist = other.mYPos - mYPos;
+	float rightDist = (mXPos + mWidth) - (other.mXPos + other.mWidth);
+	float downDist = (mYPos + mHeight) - (other.mYPos + other.mHeight);
+
+	bool collidesHoriz = (rightDist < mWidth && leftDist < mWidth);
+	bool collidesVert = (downDist < mHeight && upDist < mHeight);
+	bool hasCollided = collidesHoriz && collidesVert;
+
+	//Handle push back...
+	if (hasCollided && mCollisionBlocks) {
+		//push left...
+		if (leftDist < rightDist && leftDist < upDist && leftDist < downDist) {
+			other.mXPos -= mWidth - rightDist;
+		}	//push right...
+		else if (rightDist < upDist && rightDist < downDist) {
+			other.mXPos += mWidth - leftDist;
+		}	//push up...
+		else if (upDist < downDist) {
+			other.mYPos -= mHeight - downDist;
+		}	//push down...
+		else {
+			other.mYPos += mHeight - upDist;
+		}
+	}
+
+	return hasCollided;
 }
 
 SDL_Rect* Entity::GetSpriteClip() {
