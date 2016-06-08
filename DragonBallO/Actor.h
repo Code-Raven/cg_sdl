@@ -8,5 +8,5 @@ public:
 
 public:
 	void Move() override {};
-
+	void Attack() override {};
 };

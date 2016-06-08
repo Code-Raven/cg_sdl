@@ -5,65 +5,111 @@
 #define ANIM_UP_COUNT 2
 #define ANIM_DOWN_COUNT 2
 
+#define ANIM_ATTACK_COUNT 3
+
 extern float gDeltaTime;
 
-extern int gHorizVelocity;
-extern int gVertVelocity;
+//Keys held down...
+extern int gHorizKeysHeld;	//keys a and b
+extern int gVertKeysHeld;	//keys w and s
+
+//Keys pressed...
+extern bool gFirstKeyDown;	//keys 1
+extern bool gSecondKeyDown;	//keys 2
+extern bool gThirdKeyDown;	//keys 3
+extern bool gFourthKeyDown;	//keys 4
+
+//Keys released...
+extern bool gFirstKeyUp;	//keys 2
+extern bool gSecondKeyUp;	//keys 2
+extern bool gThirdKeyUp;	//keys 3
+extern bool gFourthKeyUp;	//keys 4
+
+static int lastAnimIndex = 4;
 
 namespace {
 	//Animation times...
-	float animRightTime = 0.f;
-	float animLeftTime = 0.f;
-	float animUpTime = 0.f;
-	float animDownTime = 0.f;
+	float attackTime = 0.25f;
 
-	//TODO: Add animation times for attacks...
-	//TODO: Add timers for each attack...
-	//TODO: After starting attack, set attack timer to animation time...
-	//TODO: Sub-divide animation attack time to create animation indices...
-	//TODO: Don't allow user input until attack time ends (reaches less then or equal to zero)...
+	//Animation timers...
+	float moveRightTimer = 0.f;
+	float moveLeftTimer = 0.f;
+	float moveUpTimer = 0.f;
+	float moveDownTimer = 0.f;
 
-	//Animation speeds... //TODO: Don't hard code these like this...
-	float animSpeed = 12;
+	float attackTimer = 0.0f;
+
+	//Animation speeds...
+	float animMoveSpeed = 12;
+	float animAttackSpeed = 12;
 
 	//Animation indices...
 	int animRightIndices[ANIM_RIGHT_COUNT] = { 4, 18};
 	int animLeftIndices[ANIM_LEFT_COUNT] = { 2, 16 };
 	int animUpIndices[ANIM_UP_COUNT] = { 3, 17 };
 	int animDownIndices[ANIM_DOWN_COUNT] = { 1, 15 };
+
+	int animAttackLeftIndices[ANIM_ATTACK_COUNT] = { 61, 48, 34 };
 }
 
 void Player::Move() {
+	//If we are attacking we want to stop movement...
+	if (attackTimer > 0.f) {
+		return;
+	}
+
 	//Setting velocity...
 	float velocity = mMoveSpeed * gDeltaTime;
 
 	//Update position...	//TODO: Should create velocity vector and normalize...
-	mXPos += gHorizVelocity * velocity;
-	mYPos += gVertVelocity * velocity;
+	mXPos += gHorizKeysHeld * velocity;
+	mYPos += gVertKeysHeld * velocity;
 
-	//Update animation...	//TODO: make this better with animations...
-	if (gHorizVelocity > 0) {
-		animRightTime += animSpeed * gDeltaTime;
+	//Update animations...
+	if (gHorizKeysHeld > 0) {
+		moveRightTimer += animMoveSpeed * gDeltaTime;
 
-		int index = (int)animRightTime % ANIM_RIGHT_COUNT;
+		int index = (int)moveRightTimer % ANIM_RIGHT_COUNT;
 		mSpriteClipIndex = animRightIndices[index];
+		lastAnimIndex = animRightIndices[0];
 	}
-	else if (gHorizVelocity < 0) {
-		animLeftTime += animSpeed * gDeltaTime;
+	else if (gHorizKeysHeld < 0) {
+		moveLeftTimer += animMoveSpeed * gDeltaTime;
 
-		int index = (int)animLeftTime % ANIM_LEFT_COUNT;
+		int index = (int)moveLeftTimer % ANIM_LEFT_COUNT;
 		mSpriteClipIndex = animLeftIndices[index];
+		lastAnimIndex = animLeftIndices[0];
 	}
-	else if (gVertVelocity > 0) {
-		animDownTime += animSpeed * gDeltaTime;
+	else if (gVertKeysHeld > 0) {
+		moveDownTimer += animMoveSpeed * gDeltaTime;
 
-		int index = (int)animDownTime % ANIM_DOWN_COUNT;
+		int index = (int)moveDownTimer % ANIM_DOWN_COUNT;
 		mSpriteClipIndex = animDownIndices[index];
+		lastAnimIndex = animDownIndices[0];
 	}
-	else if (gVertVelocity < 0) {
-		animUpTime += animSpeed * gDeltaTime;
+	else if (gVertKeysHeld < 0) {
+		moveUpTimer += animMoveSpeed * gDeltaTime;
 
-		int index = (int)animUpTime % ANIM_UP_COUNT;
+		int index = (int)moveUpTimer % ANIM_UP_COUNT;
 		mSpriteClipIndex = animUpIndices[index];
+		lastAnimIndex = animUpIndices[0];
+	}
+	else {
+		mSpriteClipIndex = lastAnimIndex;
+	}
+}
+
+void Player::Attack() {
+	//Update animation...
+	if (attackTimer > 0.f) {
+		attackTimer -= gDeltaTime;	//Updates timer...
+		float time = 1.f - (attackTimer/attackTime);
+
+		int index = (int)(time * ANIM_ATTACK_COUNT) % ANIM_ATTACK_COUNT;
+		mSpriteClipIndex = animAttackLeftIndices[index];
+
+	}	//Start animation...
+	else if (gFirstKeyDown) {
+		attackTimer = attackTime;
 	}
 }

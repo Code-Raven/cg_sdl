@@ -8,6 +8,7 @@ public:
 
 public:
 	virtual void Move() = 0;
+	virtual void Attack() = 0;
 
 	void SetHealth(int health, int maxHealth);
 	void SetMoveSpeed(float moveSpeed);
