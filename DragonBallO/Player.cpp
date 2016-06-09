@@ -20,16 +20,19 @@ extern bool gThirdKeyDown;	//keys 3
 extern bool gFourthKeyDown;	//keys 4
 
 //Keys released...
-extern bool gFirstKeyUp;	//keys 2
+extern bool gFirstKeyUp;	//keys e
 extern bool gSecondKeyUp;	//keys 2
 extern bool gThirdKeyUp;	//keys 3
 extern bool gFourthKeyUp;	//keys 4
 
-static int lastAnimIndex = 4;
+namespace {
+	int lastMoveIndex = 4;
+	int lastAttackIndex = 0;
+}
 
 namespace {
 	//Animation times...
-	float attackTime = 0.25f;
+	float attackTime = .25f;
 
 	//Animation timers...
 	float moveRightTimer = 0.f;
@@ -37,7 +40,7 @@ namespace {
 	float moveUpTimer = 0.f;
 	float moveDownTimer = 0.f;
 
-	float attackTimer = 0.0f;
+	float attackTimer = .0f;
 
 	//Animation speeds...
 	float animMoveSpeed = 12;
@@ -49,7 +52,12 @@ namespace {
 	int animUpIndices[ANIM_UP_COUNT] = { 3, 17 };
 	int animDownIndices[ANIM_DOWN_COUNT] = { 1, 15 };
 
-	int animAttackLeftIndices[ANIM_ATTACK_COUNT] = { 61, 48, 34 };
+	int animAttackLeftIndices[4][ANIM_ATTACK_COUNT] = {
+		{ 35, 49, 62 },	//right attack...
+		{ 61, 48, 34 },	//left attack...
+		{ 61, 48, 34 },	//down attack...
+		{ 61, 48, 34 }	//up attack...
+	};
 }
 
 void Player::Move() {
@@ -71,31 +79,39 @@ void Player::Move() {
 
 		int index = (int)moveRightTimer % ANIM_RIGHT_COUNT;
 		mSpriteClipIndex = animRightIndices[index];
-		lastAnimIndex = animRightIndices[0];
+
+		lastAttackIndex = 0;
+		lastMoveIndex = animRightIndices[0];
 	}
 	else if (gHorizKeysHeld < 0) {
 		moveLeftTimer += animMoveSpeed * gDeltaTime;
 
 		int index = (int)moveLeftTimer % ANIM_LEFT_COUNT;
 		mSpriteClipIndex = animLeftIndices[index];
-		lastAnimIndex = animLeftIndices[0];
+
+		lastAttackIndex = 1;
+		lastMoveIndex = animLeftIndices[0];
 	}
 	else if (gVertKeysHeld > 0) {
 		moveDownTimer += animMoveSpeed * gDeltaTime;
 
 		int index = (int)moveDownTimer % ANIM_DOWN_COUNT;
 		mSpriteClipIndex = animDownIndices[index];
-		lastAnimIndex = animDownIndices[0];
+
+		lastAttackIndex = 2;
+		lastMoveIndex = animDownIndices[0];
 	}
 	else if (gVertKeysHeld < 0) {
 		moveUpTimer += animMoveSpeed * gDeltaTime;
 
 		int index = (int)moveUpTimer % ANIM_UP_COUNT;
 		mSpriteClipIndex = animUpIndices[index];
-		lastAnimIndex = animUpIndices[0];
+
+		lastAttackIndex = 3;
+		lastMoveIndex = animUpIndices[0];
 	}
 	else {
-		mSpriteClipIndex = lastAnimIndex;
+		mSpriteClipIndex = lastMoveIndex;
 	}
 }
 
@@ -106,7 +122,7 @@ void Player::Attack() {
 		float time = 1.f - (attackTimer/attackTime);
 
 		int index = (int)(time * ANIM_ATTACK_COUNT) % ANIM_ATTACK_COUNT;
-		mSpriteClipIndex = animAttackLeftIndices[index];
+		mSpriteClipIndex = animAttackLeftIndices[lastAttackIndex][index];
 
 	}	//Start animation...
 	else if (gFirstKeyDown) {

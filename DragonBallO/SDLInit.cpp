@@ -70,7 +70,7 @@ void HandleKeyboardEvents() {
 				case SDLK_a: gHorizKeysHeld -= 1; break;	//left...
 				case SDLK_d: gHorizKeysHeld += 1; break;	//right...
 				//Keys pressed...
-				case SDLK_1: gFirstKeyDown = true; break;
+				case SDLK_e: gFirstKeyDown = true; break;
 				case SDLK_2: gSecondKeyDown = true; break;
 				case SDLK_3: gThirdKeyDown = true; break;
 				case SDLK_4: gFourthKeyDown = true; break;
@@ -88,7 +88,7 @@ void HandleKeyboardEvents() {
 				case SDLK_a: gHorizKeysHeld += 1; break;	//left...
 				case SDLK_d: gHorizKeysHeld -= 1; break;	//right...
 				//Keys released...
-				case SDLK_1: gFirstKeyUp = true; break;
+				case SDLK_e: gFirstKeyUp = true; break;
 				case SDLK_2: gSecondKeyUp = true; break;
 				case SDLK_3: gThirdKeyUp = true; break;
 				case SDLK_4: gFourthKeyUp = true; break;
@@ -214,11 +214,14 @@ void SDLInit::DrawTexture(Entity &entity) {
 	SDL_Rect renderRect = {(int)entity.mXPos, (int)entity.mYPos,
 		entity.mWidth, entity.mHeight };
 
-	////Set clip rendering dimensions
-	//if (clip != NULL) {
-	//	renderQuad.w = clip->w;
-	//	renderQuad.h = clip->h;
-	//}
+	auto *anchorOffset = entity.GetAnchorOffset();
+
+	//If the sprite size changes, the sprite will move. This offset
+	//	is for anchoring the sprite, so that it doesn't move.
+	if (anchorOffset != NULL) {
+		renderRect.x += anchorOffset->x;
+		renderRect.y += anchorOffset->y;
+	}
 
 	//Render to screen
 	SDL_RenderCopy(gRenderer, entity.mTexture,

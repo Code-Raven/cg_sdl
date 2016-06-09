@@ -5,6 +5,11 @@ Entity::~Entity() {
 		delete[] mSpriteCLips;
 		mSpriteCLips = nullptr;
 	}
+
+	if (mAnchorOffsets == nullptr) {
+		delete[] mAnchorOffsets;
+		mAnchorOffsets = nullptr;
+	}
 }
 
 void Entity::SetTexturePath(const char* texturePath) {
@@ -32,9 +37,14 @@ void Entity::InitSpriteSheet(uInt startClipIndex, uInt numSpriteCLipsX, uInt num
 	mNumSpriteClipsY = numSpriteClipsY;
 
 	mSpriteCLips = new SDL_Rect[mNumSpriteClips];
+	mAnchorOffsets = new Int2[mNumSpriteClips];
 	mSpriteClipIndex = startClipIndex;
 }
 
+/************************************************************************/
+/* 	Sprite clip is used to render texture coordinates (for sprite
+sheets)
+/************************************************************************/
 void Entity::SetSpriteClip(int x, int y, uInt w, uInt h, uInt index) {
 	if (mSpriteCLips == NULL) {
 		printf("Cannot set sprite clip. Please call InitSpriteSheet first.");
@@ -44,6 +54,20 @@ void Entity::SetSpriteClip(int x, int y, uInt w, uInt h, uInt index) {
 	int i = index % mNumSpriteClips;
 	mSpriteCLips[i].x = x; mSpriteCLips[i].y = y;
 	mSpriteCLips[i].w = w; mSpriteCLips[i].h = h;
+}
+
+/************************************************************************/
+/* 	If the sprite size changes, the sprite will move. This offset
+is for anchoring the sprite, so that it doesn't move.
+/************************************************************************/
+void Entity::SetAnchorOffset(Int2 anchorOffset, uInt index) {
+	if (mAnchorOffsets == NULL) {
+		printf("Cannot set clip offset. Please call InitSpriteSheet first.");
+		return;
+	}
+
+	int i = index % mNumSpriteClips;
+	mAnchorOffsets[i] = anchorOffset;
 }
 
 bool Entity::CheckCollision(Entity &other) {
@@ -76,6 +100,18 @@ bool Entity::CheckCollision(Entity &other) {
 	return hasCollided;
 }
 
+/************************************************************************/
+/* 	Sprite clip is used to render texture coordinates (for sprite
+sheets)
+/************************************************************************/
 SDL_Rect* Entity::GetSpriteClip() {
 	return mSpriteCLips + mSpriteClipIndex;
+}
+
+/************************************************************************/
+/* 	If the sprite size changes, the sprite will move. This offset
+is for anchoring the sprite, so that it doesn't move.
+/************************************************************************/
+Entity::Int2* Entity::GetAnchorOffset() {
+	return mAnchorOffsets + mSpriteClipIndex;
 }
