@@ -11,7 +11,7 @@
 *.userprefs
 
 # Build results
-![Dd]ebug/*.dll
+![Ll]ib
 [Dd]ebug/*
 [Dd]ebugPublic/
 [Rr]elease/
