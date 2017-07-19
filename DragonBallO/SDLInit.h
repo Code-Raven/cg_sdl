@@ -2,6 +2,8 @@
 #include <SDL.h>
 #include <stdio.h>
 
+#pragma once
+
 class SDLInit{
 
 	public:

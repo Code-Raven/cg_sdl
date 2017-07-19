@@ -52,7 +52,8 @@ void SDLInit::Update(){
 }
 
 bool SDLInit::Cleanup(){
-	bool initSuccess = true;
+	//TODO: Actually make this meaningful...
+	bool cleanupSuccess = true;
 
 	//Destroy window
 	SDL_DestroyWindow( window );
@@ -60,5 +61,5 @@ bool SDLInit::Cleanup(){
 	//Quit SDL subsystems
 	SDL_Quit();
 
-	return initSuccess;
+	return cleanupSuccess;
 }

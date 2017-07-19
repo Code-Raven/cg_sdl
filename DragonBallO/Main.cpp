@@ -8,7 +8,8 @@ int main( int argc, char* args[] )
 		gameManager.Update();
 	}
 
-	gameManager.Cleanup();
+	//TODO: Do something with actual return value...
+	(void)gameManager.Cleanup();
 
 	return 0;
 }
