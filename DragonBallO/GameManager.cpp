@@ -2,6 +2,7 @@
 #include "SDLInit.h"
 #include "Player.h"
 #include "Actor.h"
+#include "Camera.h"
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
@@ -13,6 +14,7 @@ extern int SCREEN_HEIGHT;		//TODO: currently not using...
 static SDLInit sdlInit;
 
 namespace {
+	Camera camera;
 	Player player;
 	Entity tree;
 }

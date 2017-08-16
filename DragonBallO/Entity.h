@@ -26,6 +26,8 @@ public:
 
 	void SetCollision(bool blocking) { mCollisionBlocks = blocking; }
 	bool CheckCollision(Entity &other);
+
+	MyMath::Float2 GetPosition();
 	
 	SDL_Rect* GetSpriteClip();
 	Int2* GetAnchorOffset();

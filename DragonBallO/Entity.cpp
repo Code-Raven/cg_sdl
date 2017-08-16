@@ -26,6 +26,11 @@ void Entity::SetSize(int width, int height) {
 	mHeight = height;
 }
 
+MyMath::Float2 Entity::GetPosition() {
+	MyMath::Float2 pos{ mXPos, mYPos };
+	return pos;
+}
+
 void Entity::InitSpriteSheet(uInt startClipIndex, uInt numSpriteCLipsX, uInt numSpriteClipsY) {
 	if (numSpriteCLipsX == 0 || numSpriteClipsY == 0) {
 		printf("Number of sprite clips must be at least 1.");
