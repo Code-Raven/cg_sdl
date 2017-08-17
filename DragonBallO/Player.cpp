@@ -70,8 +70,8 @@ void Player::Move() {
 	float velocity = mMoveSpeed * gDeltaTime;
 
 	//Update position...	//TODO: Should create velocity vector and normalize...
-	mXPos += gHorizKeysHeld * velocity;
-	mYPos += gVertKeysHeld * velocity;
+	mPos.x += gHorizKeysHeld * velocity;
+	mPos.y += gVertKeysHeld * velocity;
 
 	//Update animations...
 	if (gHorizKeysHeld > 0) {

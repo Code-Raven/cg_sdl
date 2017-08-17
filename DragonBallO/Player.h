@@ -1,13 +1,14 @@
 #pragma once
-#include "Living.h"
+#include "Sprite.h"
+#include "Destructible.h"
 
-class Player : public Living {
+class Player : public Sprite, public Destructible {
 public:
 	//Base class destructor is ALWAYS implicitly called...
-	Player() : Living() { mCollisionBlocks = true; };
+	Player() { mCollisionBlocks = false; }
 	virtual ~Player() override {}
 
 public:
-	void Move() override;
-	void Attack() override;
+	void Move();
+	void Attack();
 };

@@ -1,18 +1,12 @@
 #pragma once
-#include "Entity.h"
 
-class Living : public Entity {
+class Destructible {
 public:
 	//Base class destructor is ALWAYS implicitly called...
-	virtual ~Living() override {}
+	virtual ~Destructible() {}
 
 public:
-	virtual void Move() = 0;
-	virtual void Attack() = 0;
-
 	void SetHealth(int health, int maxHealth);
-	void SetMoveSpeed(float moveSpeed);
-
 	bool TakeDamage(int damage);
 
 protected:

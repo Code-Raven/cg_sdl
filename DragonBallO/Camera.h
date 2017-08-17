@@ -14,5 +14,8 @@ public:
 
 private:
 	MyMath::Float2 mPos;
+
+	SDL_Rect *mBounds = nullptr;
+
 };
 

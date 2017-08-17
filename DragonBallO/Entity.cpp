@@ -1,122 +1,45 @@
 #include "Entity.h"
 
-Entity::~Entity() {
-	if (mSpriteCLips == nullptr) {
-		delete[] mSpriteCLips;
-		mSpriteCLips = nullptr;
-	}
-
-	if (mAnchorOffsets == nullptr) {
-		delete[] mAnchorOffsets;
-		mAnchorOffsets = nullptr;
-	}
-}
-
-void Entity::SetTexturePath(const char* texturePath) {
-	mTexturePath = texturePath;
-}
+using Float2 = MyMath::Float2;
 
 void Entity::SetPosition(float x, float y) {
-	mXPos = x;
-	mYPos = y;
+	mPos = { x, y };
 }
 
-void Entity::SetSize(int width, int height) {
-	mWidth = width;
-	mHeight = height;
+Float2 Entity::GetPosition() {
+	return mPos;
 }
 
-MyMath::Float2 Entity::GetPosition() {
-	MyMath::Float2 pos{ mXPos, mYPos };
-	return pos;
-}
-
-void Entity::InitSpriteSheet(uInt startClipIndex, uInt numSpriteCLipsX, uInt numSpriteClipsY) {
-	if (numSpriteCLipsX == 0 || numSpriteClipsY == 0) {
-		printf("Number of sprite clips must be at least 1.");
-		return;
-	}
-
-	mNumSpriteClips = numSpriteCLipsX * numSpriteClipsY;
-	mNumSpriteClipsX = numSpriteCLipsX;
-	mNumSpriteClipsY = numSpriteClipsY;
-
-	mSpriteCLips = new SDL_Rect[mNumSpriteClips];
-	mAnchorOffsets = new Int2[mNumSpriteClips];
-	mSpriteClipIndex = startClipIndex;
-}
-
-/************************************************************************/
-/* 	Sprite clip is used to render texture coordinates (for sprite
-sheets)
-/************************************************************************/
-void Entity::SetSpriteClip(int x, int y, uInt w, uInt h, uInt index) {
-	if (mSpriteCLips == NULL) {
-		printf("Cannot set sprite clip. Please call InitSpriteSheet first.");
-		return;
-	}
-
-	int i = index % mNumSpriteClips;
-	mSpriteCLips[i].x = x; mSpriteCLips[i].y = y;
-	mSpriteCLips[i].w = w; mSpriteCLips[i].h = h;
-}
-
-/************************************************************************/
-/* 	If the sprite size changes, the sprite will move. This offset
-is for anchoring the sprite, so that it doesn't move.
-/************************************************************************/
-void Entity::SetAnchorOffset(Int2 anchorOffset, uInt index) {
-	if (mAnchorOffsets == NULL) {
-		printf("Cannot set clip offset. Please call InitSpriteSheet first.");
-		return;
-	}
-
-	int i = index % mNumSpriteClips;
-	mAnchorOffsets[i] = anchorOffset;
+void Entity::SetMoveSpeed(float moveSpeed) {
+	mMoveSpeed = moveSpeed;
 }
 
 bool Entity::CheckCollision(Entity &other) {
-	float leftDist = other.mXPos - mXPos;
-	float upDist = other.mYPos - mYPos;
-	float rightDist = (mXPos + mWidth) - (other.mXPos + other.mWidth);
-	float downDist = (mYPos + mHeight) - (other.mYPos + other.mHeight);
+	float leftDist = other.mPos.x - mPos.x;
+	float upDist = other.mPos.y - mPos.y;
+	float rightDist = (mPos.x + mSize.x) - (other.mPos.x + other.mSize.x);
+	float downDist = (mPos.y + mSize.y) - (other.mPos.y + other.mSize.y);
 
-	bool collidesHoriz = (rightDist < mWidth && leftDist < mWidth);
-	bool collidesVert = (downDist < mHeight && upDist < mHeight);
+	bool collidesHoriz = (rightDist < mSize.x && leftDist < mSize.x);
+	bool collidesVert = (downDist < mSize.y && upDist < mSize.y);
 	bool hasCollided = collidesHoriz && collidesVert;
 
 	//Handle push back...
 	if (hasCollided && mCollisionBlocks) {
 		//push left...
 		if (leftDist < rightDist && leftDist < upDist && leftDist < downDist) {
-			other.mXPos -= mWidth - rightDist;
+			other.mPos.x -= mSize.x - rightDist;
 		}	//push right...
 		else if (rightDist < upDist && rightDist < downDist) {
-			other.mXPos += mWidth - leftDist;
+			other.mPos.x += mSize.x - leftDist;
 		}	//push up...
 		else if (upDist < downDist) {
-			other.mYPos -= mHeight - downDist;
+			other.mPos.y -= mSize.y - downDist;
 		}	//push down...
 		else {
-			other.mYPos += mHeight - upDist;
+			other.mPos.y += mSize.y - upDist;
 		}
 	}
 
 	return hasCollided;
-}
-
-/************************************************************************/
-/* 	Sprite clip is used to render texture coordinates (for sprite
-sheets)
-/************************************************************************/
-SDL_Rect* Entity::GetSpriteClip() {
-	return mSpriteCLips + mSpriteClipIndex;
-}
-
-/************************************************************************/
-/* 	If the sprite size changes, the sprite will move. This offset
-is for anchoring the sprite, so that it doesn't move.
-/************************************************************************/
-Entity::Int2* Entity::GetAnchorOffset() {
-	return mAnchorOffsets + mSpriteClipIndex;
 }

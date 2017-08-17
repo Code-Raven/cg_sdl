@@ -4,25 +4,25 @@
 #include <stdio.h>
 #include <string>
 
-#include "Entity.h"
+#include "Sprite.h"
 
 class SDLInit{
 
 	public:
 		bool Setup();
 
-		void LoadTexture(Entity &entity);
+		void LoadTexture(Sprite &sprite);
 
-		void SetColor(Entity &entity, Uint8 red, Uint8 green, Uint8 blue);
-		void SetBlendMode(Entity &entity, SDL_BlendMode blending);
-		void SetAlpha(Entity &entity, Uint8 alpha);
+		void SetColor(Sprite &sprite, Uint8 red, Uint8 green, Uint8 blue);
+		void SetBlendMode(Sprite &sprite, SDL_BlendMode blending);
+		void SetAlpha(Sprite &sprite, Uint8 alpha);
 
-		void DrawTexture(Entity &entity);
+		void DrawSprite(Sprite &sprite);
 
 		void Render();
 		void Update();
 
-		void CleanupTexture(Entity &entity);
+		void CleanupSprite(Sprite &sprite);
 		void Cleanup();
 
 	private:

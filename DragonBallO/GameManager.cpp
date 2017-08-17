@@ -1,7 +1,6 @@
 #include "GameManager.h"
 #include "SDLInit.h"
 #include "Player.h"
-#include "Actor.h"
 #include "Camera.h"
 
 extern SDL_Window* gWindow;
@@ -16,7 +15,7 @@ static SDLInit sdlInit;
 namespace {
 	Camera camera;
 	Player player;
-	Entity tree;
+	Sprite tree;
 }
 
 void InitEntities() {
@@ -33,8 +32,8 @@ void InitEntities() {
 	tree.SetPosition(200, 300);
 
 	//Setting size information...
-	player.SetSize(50, 50);
-	tree.SetSize(64, 78);
+	player.SetSpriteSize(50, 50);
+	tree.SetSpriteSize(64, 78);
 
 	//Set sprite sheet texture coordinates...
 	player.InitSpriteSheet(0, 14, 6);
@@ -78,8 +77,8 @@ bool GameManager::Init(){
 }
 
 void GameManager::Cleanup(){
-	sdlInit.CleanupTexture(player);
-	sdlInit.CleanupTexture(tree);
+	sdlInit.CleanupSprite(player);
+	sdlInit.CleanupSprite(tree);
 	sdlInit.Cleanup();
 }
 
@@ -95,6 +94,6 @@ void GameManager::Update() {
 
 void GameManager::Render(){
 	sdlInit.Render();
-	sdlInit.DrawTexture(tree);
-	sdlInit.DrawTexture(player);
+	sdlInit.DrawSprite(tree);
+	sdlInit.DrawSprite(player);
 }

@@ -155,9 +155,9 @@ bool SDLInit::Setup(){
 	return success;
 }
 
-void SDLInit::LoadTexture(Entity &entity) {
+void SDLInit::LoadTexture(Sprite &sprite) {
 	//This is how we get our file name...
-	const char* filePath = entity.mTexturePath;
+	const char* filePath = sprite.mTexturePath;
 
 	//The final texture
 	SDL_Texture* newTexture = NULL;
@@ -177,8 +177,8 @@ void SDLInit::LoadTexture(Entity &entity) {
 			printf("Unable to create texture from %s! SDL Error: %s\n", filePath, SDL_GetError());
 		}
 		else {	//get image dimensions. Can call Entity.SetSize to override...
-			entity.mWidth = loadedSurface->w;
-			entity.mHeight = loadedSurface->h;
+			sprite.mSize.x = loadedSurface->w;
+			sprite.mSize.y = loadedSurface->h;
 		}
 
 		//Get rid of old loaded surface
@@ -186,35 +186,35 @@ void SDLInit::LoadTexture(Entity &entity) {
 	}
 
 	//Return success
-	entity.mTexture = newTexture;
+	sprite.mTexture = newTexture;
 }
 
-void SDLInit::SetColor(Entity &entity, Uint8 red, Uint8 green, Uint8 blue) {
+void SDLInit::SetColor(Sprite &sprite, Uint8 red, Uint8 green, Uint8 blue) {
 	//Modulate texture rgb
-	SDL_SetTextureColorMod(entity.mTexture, red, green, blue);
+	SDL_SetTextureColorMod(sprite.mTexture, red, green, blue);
 }
 
-void SDLInit::SetBlendMode(Entity &entity, SDL_BlendMode blending) {
+void SDLInit::SetBlendMode(Sprite &sprite, SDL_BlendMode blending) {
 	//Set blending function
-	SDL_SetTextureBlendMode(entity.mTexture, blending);
+	SDL_SetTextureBlendMode(sprite.mTexture, blending);
 }
 
-void SDLInit::SetAlpha(Entity &entity, Uint8 alpha) {
+void SDLInit::SetAlpha(Sprite &sprite, Uint8 alpha) {
 	//Modulate texture alpha
-	SDL_SetTextureAlphaMod(entity.mTexture, alpha);
+	SDL_SetTextureAlphaMod(sprite.mTexture, alpha);
 }
 
-void SDLInit::CleanupTexture(Entity &entity) {
-	SDL_DestroyTexture(entity.mTexture);
-	entity.mTexture = NULL;
+void SDLInit::CleanupSprite(Sprite &sprite) {
+	SDL_DestroyTexture(sprite.mTexture);
+	sprite.mTexture = NULL;
 }
 
-void SDLInit::DrawTexture(Entity &entity) {
+void SDLInit::DrawSprite(Sprite &sprite) {
 	//Set rendering space and render to screen
-	SDL_Rect renderRect = {(int)entity.mXPos, (int)entity.mYPos,
-		entity.mWidth, entity.mHeight };
+	SDL_Rect renderRect = {(int)sprite.mPos.x, (int)sprite.mPos.y,
+		sprite.mSize.x, sprite.mSize.y };
 
-	auto *anchorOffset = entity.GetAnchorOffset();
+	auto *anchorOffset = sprite.GetAnchorOffset();
 
 	//If the sprite size changes, the sprite will move. This offset
 	//	is for anchoring the sprite, so that it doesn't move.
@@ -224,8 +224,8 @@ void SDLInit::DrawTexture(Entity &entity) {
 	}
 
 	//Render to screen
-	SDL_RenderCopy(gRenderer, entity.mTexture,
-		entity.GetSpriteClip(), &renderRect);
+	SDL_RenderCopy(gRenderer, sprite.mTexture,
+		sprite.GetSpriteClip(), &renderRect);
 }
 
 void SDLInit::Render() {
