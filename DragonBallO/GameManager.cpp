@@ -46,7 +46,7 @@ void InitEntities() {
 	//Setting size information...
 	player.SetSpriteSize(70, 70);
 	tree.SetSpriteSize(64, 78);
-	boulder.SetSpriteSize(48, 48);
+	boulder.SetSpriteSize(45, 45);
 
 	//Set sprite sheet texture coordinates...
 	player.InitSpriteSheet(0, 14, 6);
