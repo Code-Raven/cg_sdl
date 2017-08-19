@@ -2,6 +2,7 @@
 #include <string>
 #include <SDL_image.h>
 #include "MyMath.h"
+#include <vector>
 
 class Entity {
 
@@ -15,15 +16,20 @@ public:
 	virtual ~Entity() {};
 
 public:
+	virtual void Update();
+	virtual void OnCollision(Entity *other);
+
 	void SetPosition(float x, float y);
 	void SetMoveSpeed(float moveSpeed);
 
-	void ConfigureCollision(bool pushesBackOthers,
-		Int2 topLeftCollOffset = { 0, 0 }, Int2 bottomRightCollOffset = { 0, 0 });
+	void ConfigureCollision(bool pushesBackOthers, Int2 topLeftCollOffset = { 0, 0 },
+		Int2 bottomRightCollOffset = { 0, 0 });
 
-	bool CheckCollision(Entity &other);
+	void AddCollidableEntity(Entity &entity);
+	Float2 GetPosition();
 
-	MyMath::Float2 GetPosition();
+private:
+	void CheckCollision();
 
 protected:
 	Float2 mPos;
@@ -35,6 +41,8 @@ protected:
 	//If this entity can move, it needs a move speed...
 	float mMoveSpeed{ 140.f };
 
-	//For pushing back entity (if collision succeeds)
-	bool mCollPushesBackOthers{false};
+	//For collision...
+	std::vector<Entity*> mCollidableEntities;
+	bool mCanBePushedBack{false};
+	int mHasCollided{false};
 };

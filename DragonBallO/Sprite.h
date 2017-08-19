@@ -11,7 +11,7 @@ using Int2 = MyMath::Int2;
 using Float2 = MyMath::Float2;
 
 public:
-	~Sprite() override;
+	virtual ~Sprite() override;
 
 	void SetTexturePath(const char* texturePath);
 	void SetSpriteSize(int width, int height);

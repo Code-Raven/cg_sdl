@@ -18,6 +18,7 @@ class SDLInit{
 		void SetAlpha(Sprite &sprite, Uint8 alpha);
 
 		void DrawSprite(Sprite &sprite);
+		void DrawEntityCollider(Entity &entity);
 
 		void Render();
 		void Update();

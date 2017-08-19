@@ -60,6 +60,12 @@ namespace {
 	};
 }
 
+void Player::Update() {
+	Move();
+	Attack();
+	Sprite::Update();
+}
+
 void Player::Move() {
 	//If we are attacking we want to stop movement...
 	if (attackTimer > 0.f) {

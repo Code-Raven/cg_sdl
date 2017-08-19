@@ -3,12 +3,10 @@
 #include "Player.h"
 #include "Camera.h"
 
+#define SHOW_COLLIDERS false
+
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
-
-//Screen dimension constants
-extern int SCREEN_WIDTH;		//TODO: currently not using...
-extern int SCREEN_HEIGHT;		//TODO: currently not using...
 
 static SDLInit sdlInit;
 
@@ -21,9 +19,9 @@ namespace {
 
 void InitEntities() {
 	//Setting path names...
-	player.SetTexturePath("textures/link_sheet_test.png");
+	player.SetTexturePath("textures/link_sheet.png");
 	tree.SetTexturePath("textures/tree_green.gif");
-	tree2.SetTexturePath("textures/tree_green_test.gif");
+	tree2.SetTexturePath("textures/tree_green.gif");
 
 	//Loading textures...
 	sdlInit.LoadTexture(player);
@@ -69,8 +67,12 @@ void InitEntities() {
 	player.SetAnchorOffset({-11, -13}, 35);			//first right attack...=>2
 
 	//Setup collision...
-	tree.ConfigureCollision(true);
-	tree2.ConfigureCollision(true);//, { 32, 0 }, { 0, 0 });
+	player.ConfigureCollision(true, { 0, 8 }, { 25, 10 });
+	tree.ConfigureCollision(false, { 0, 22 });
+	tree2.ConfigureCollision(false, { 0, 22 });
+
+	player.AddCollidableEntity(tree);
+	player.AddCollidableEntity(tree2);
 }
 
 bool GameManager::Init(){
@@ -91,18 +93,25 @@ void GameManager::Cleanup(){
 
 //TODO: Add deltatime later...
 void GameManager::Update() {
-	player.Move();
-	player.Attack();
+	player.Update();
+	tree.Update();
+	tree2.Update();
 
-	//(void)tree.CheckCollision(player);
-	(void)tree2.CheckCollision(player);
-
+	//Needs to come last...
 	sdlInit.Update();
 }
 
 void GameManager::Render(){
 	sdlInit.Render();
+
+	sdlInit.DrawSprite(player);
 	sdlInit.DrawSprite(tree);
 	sdlInit.DrawSprite(tree2);
-	sdlInit.DrawSprite(player);
+
+	//Needs to come last...
+	if (SHOW_COLLIDERS) {
+		sdlInit.DrawEntityCollider(player);
+		sdlInit.DrawEntityCollider(tree);
+		sdlInit.DrawEntityCollider(tree2);
+	}
 }

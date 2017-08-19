@@ -148,6 +148,9 @@ bool SDLInit::Setup(){
 					printf("SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError());
 					success = false;
 				}
+				else {
+					SDL_SetRenderDrawBlendMode(gRenderer, SDL_BLENDMODE_BLEND);
+				}
 			}
 		}
 	}
@@ -226,6 +229,25 @@ void SDLInit::DrawSprite(Sprite &sprite) {
 	//Render to screen
 	SDL_RenderCopy(gRenderer, sprite.mTexture,
 		sprite.GetSpriteClip(), &renderRect);
+}
+
+void SDLInit::DrawEntityCollider(Entity &entity) {
+	if (entity.mHasCollided) {
+		SDL_SetRenderDrawColor(gRenderer, 255, 0, 32, 48);
+		//TODO: Not the best place to put this, but works...
+		entity.mHasCollided = false;
+	}
+	else {
+		SDL_SetRenderDrawColor(gRenderer, 32, 0, 255, 48);
+	}
+	
+	SDL_Rect rectangle;
+
+	rectangle.x = int(entity.mPos.x + entity.mTopLeftCollOffset.x);
+	rectangle.y = int(entity.mPos.y + entity.mTopLeftCollOffset.y);
+	rectangle.w = int(entity.mSize.x - entity.mTopLeftCollOffset.x - entity.mBottomRightCollOffset.x);
+	rectangle.h = int(entity.mSize.y - entity.mTopLeftCollOffset.y - entity.mBottomRightCollOffset.y);
+	SDL_RenderFillRect(gRenderer, &rectangle);
 }
 
 void SDLInit::Render() {

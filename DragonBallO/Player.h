@@ -5,10 +5,12 @@
 class Player : public Sprite, public Destructible {
 public:
 	//Base class destructor is ALWAYS implicitly called...
-	Player() { mCollPushesBackOthers = false; }
+	Player() { mCanBePushedBack = false; }
 	virtual ~Player() override {}
 
-public:
+	void Update() override;
+
+private:
 	void Move();
 	void Attack();
 };
