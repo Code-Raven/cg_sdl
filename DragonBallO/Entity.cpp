@@ -1,9 +1,13 @@
 #include "Entity.h"
+#include "Camera.h"
 
 using namespace MyMath;
 
+extern Camera gCamera;
+
 void Entity::Update() {
 	CheckCollision();
+	gCamera.RestrictTargetToWorld(*this);
 }
 
 void Entity::SetPosition(float x, float y) {
@@ -67,22 +71,47 @@ void Entity::CheckCollision() {
 
 		bool hasCollided = collidesHoriz && collidesVert;
 
+		//other->mBlockedSides |= 1 << 0;	//blocks right...
+		//other->mBlockedSides |= 1 << 1;	//blocks top...
+		//other->mBlockedSides |= 1 << 2;	//blocks left...
+		//other->mBlockedSides |= 1 << 3;	//blocks bottom...
+
 		if (hasCollided) {
 			other->OnCollision(this);
 			OnCollision(other);
 
 			if (other->mCanBePushedBack) {
 				if (rightDist > leftDist && rightDist > bottomDist && rightDist > topDist) {
-					other->mPos.x += rightDist - collisionWidth;
+					if (other->mBlockedSides & 1 << 0) {
+						mPos.x += collisionWidth - rightDist;
+					}
+					else {
+						other->mPos.x += rightDist - collisionWidth;
+					}
 				}
 				else if (topDist > bottomDist && topDist > leftDist) {
-					other->mPos.y += collisionHeight - topDist;
+					if (other->mBlockedSides & 1 << 1) {
+						mPos.y += topDist - collisionHeight;
+					}
+					else {
+						other->mPos.y += collisionHeight - topDist;
+					}
 				}
 				else if (leftDist > bottomDist) {
-					other->mPos.x += collisionWidth - leftDist;
+					if (other->mBlockedSides & 1 << 2) {
+						mPos.x += leftDist - collisionWidth;
+					}
+					else {
+						other->mPos.x += collisionWidth - leftDist;
+					}
 				}
 				else {
-					other->mPos.y += bottomDist - collisionHeight;
+					if (other->mBlockedSides & 1 << 3) {
+						mPos.y += collisionHeight - bottomDist;
+					}
+					else {
+						other->mPos.y += bottomDist - collisionHeight;
+					}
 				}
 			}
 			else if (mCanBePushedBack) {

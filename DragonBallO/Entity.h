@@ -12,6 +12,7 @@ friend class Camera;
 using UInt = unsigned int;
 using Int2 = MyMath::Int2;
 using Float2 = MyMath::Float2;
+using UByte = MyMath::UByte;
 
 public:
 	//Needs to be virtual so that derived destructor gets called...
@@ -24,13 +25,15 @@ public:
 	void SetPosition(float x, float y);
 	void SetMoveSpeed(float moveSpeed);
 
-	void ConfigureCollision(bool pushesBackOthers, Int2 topLeftCollOffset = { 0, 0 },
+	void ConfigureCollision(bool canBePashedBack, Int2 topLeftCollOffset = { 0, 0 },
 		Int2 bottomRightCollOffset = { 0, 0 });
 
 	void AddCollidableEntity(Entity &entity);
 
 private:
 	void CheckCollision();
+
+	UByte mBlockedSides{ 0 };
 
 protected:
 	Float2 mPos;

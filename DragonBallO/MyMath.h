@@ -1,6 +1,7 @@
 #pragma once
 
 namespace MyMath {
+	using UByte = unsigned char;
 	struct Int2 {
 		Int2(){}
 		Int2(int x, int y) : x(x), y(y) {}

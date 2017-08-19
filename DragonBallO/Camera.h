@@ -25,10 +25,12 @@ public:
 	void LookAt(Entity &target);
 	void PanWith(Entity &target);
 
-	void RestrictCameraToWorld();
 	void RestrictTargetToWorld(Entity &target);
 
 	bool IsPanning();
+
+private:
+	void RestrictCameraToWorld();
 
 private:
 	Float2 mPos;

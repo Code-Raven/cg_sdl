@@ -3,15 +3,15 @@
 #include "Player.h"
 #include "Camera.h"
 
-#define PAN_CAMERA_INSTEAD false
-#define SHOW_COLLIDERS true
+#define PAN_CAMERA_INSTEAD true
+#define SHOW_COLLIDERS false
 
 //Also camera dimension...
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-const int WORLD_WIDTH = 1280;
-const int WORLD_HEIGHT = 1280;
+const int WORLD_WIDTH = 2400;
+const int WORLD_HEIGHT = 2400;
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
@@ -24,29 +24,29 @@ namespace {
 	Camera camera;
 	Player player;
 	Sprite tree;
-	Sprite tree2;
+	Sprite boulder;
 }
 
 void InitEntities() {
 	//Setting path names...
 	player.SetTexturePath("textures/link_sheet.png");
 	tree.SetTexturePath("textures/tree_green.gif");
-	tree2.SetTexturePath("textures/tree_green.gif");
+	boulder.SetTexturePath("textures/boulder.png");
 
 	//Loading textures...
 	sdlInit.LoadTexture(player);
 	sdlInit.LoadTexture(tree);
-	sdlInit.LoadTexture(tree2);
+	sdlInit.LoadTexture(boulder);
 
 	//Setting position information...
 	player.SetPosition(0, 0);
 	tree.SetPosition(200, 300);
-	tree2.SetPosition(200, 150);
+	boulder.SetPosition(200, 150);
 
 	//Setting size information...
 	player.SetSpriteSize(70, 70);
 	tree.SetSpriteSize(64, 78);
-	tree2.SetSpriteSize(64, 78);
+	boulder.SetSpriteSize(48, 48);
 
 	//Set sprite sheet texture coordinates...
 	player.InitSpriteSheet(0, 14, 6);
@@ -78,11 +78,11 @@ void InitEntities() {
 
 	//Setup collision...
 	player.ConfigureCollision(true, { 0, 14 }, { 35, 16 });
-	tree.ConfigureCollision(true);
-	tree2.ConfigureCollision(false);
+	tree.ConfigureCollision(false);
+	boulder.ConfigureCollision(true);
 
 	player.AddCollidableEntity(tree);
-	player.AddCollidableEntity(tree2);
+	player.AddCollidableEntity(boulder);
 }
 
 bool GameManager::Init(){
@@ -97,14 +97,14 @@ bool GameManager::Init(){
 void GameManager::Cleanup(){
 	sdlInit.CleanupSprite(player);
 	sdlInit.CleanupSprite(tree);
-	sdlInit.CleanupSprite(tree2);
+	sdlInit.CleanupSprite(boulder);
 	sdlInit.Cleanup();
 }
 
 //TODO: Add deltatime later...
 void GameManager::Update() {
 	tree.Update();
-	tree2.Update();
+	boulder.Update();
 	player.Update();
 
 	//Needs to come last...
@@ -122,13 +122,13 @@ void GameManager::Render(){
 	sdlInit.Render();
 
 	sdlInit.DrawSprite(tree);
-	sdlInit.DrawSprite(tree2);
+	sdlInit.DrawSprite(boulder);
 	sdlInit.DrawSprite(player);
 
 	//Needs to come last...
 	if (SHOW_COLLIDERS) {
 		sdlInit.DrawEntityCollider(tree);
-		sdlInit.DrawEntityCollider(tree2);
+		sdlInit.DrawEntityCollider(boulder);
 		sdlInit.DrawEntityCollider(player);
 	}
 }

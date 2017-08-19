@@ -31,17 +31,20 @@ void Camera::RestrictCameraToWorld() {
 void Camera::RestrictTargetToWorld(Entity &target) {
 	//Restricting player to world...
 	if (target.mPos.x + target.mTopLeftCollOffset.x < 0.0f) {
+		target.mBlockedSides |= 1 << 0;	//blocks right...
 		target.mPos.x = (float)target.mTopLeftCollOffset.x;
 	}
 	if (target.mPos.y + target.mTopLeftCollOffset.y < 0.0f) {
 		target.mPos.y = (float)-target.mTopLeftCollOffset.y;
+		target.mBlockedSides |= 1 << 3;	//blocks bottom...
 	}
-	
 	if (target.mPos.x + target.mSize.x - target.mBottomRightCollOffset.x > WORLD_WIDTH) {
 		target.mPos.x = float(WORLD_WIDTH - target.mSize.x + target.mBottomRightCollOffset.x);
+		target.mBlockedSides |= 1 << 2;	//blocks left...
 	}
 	if (target.mPos.y + target.mSize.y - target.mBottomRightCollOffset.y > WORLD_HEIGHT) {
 		target.mPos.y = float(WORLD_HEIGHT - target.mSize.y + target.mBottomRightCollOffset.y);
+		target.mBlockedSides |= 1 << 1;	//blocks top...
 	}
 }
 
@@ -52,7 +55,6 @@ void Camera::SetPos(Float2 pos) {
 
 void Camera::LookAt(Entity &target) {
 	SetPos({target.mPos.x + (target.mSize.x/2.0f), target.mPos.y + (target.mSize.y/2.0f)});
-	RestrictTargetToWorld(target);
 	RestrictCameraToWorld();
 }
 
