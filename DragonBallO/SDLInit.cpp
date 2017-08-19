@@ -1,4 +1,5 @@
 #include "SDLInit.h"
+#include "Camera.h"
 
 #define MILLI_PER_SEC 1000.f
 
@@ -7,9 +8,11 @@
 #define BG_B 0x38
 #define BG_A 0xFF
 
-//Screen dimension constants
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
+extern Camera gCamera;
+
+//Also camera dimension...
+extern const int SCREEN_WIDTH;
+extern const int SCREEN_HEIGHT;
 
 //The window we'll be rendering to
 SDL_Window* gWindow = NULL;
@@ -214,8 +217,11 @@ void SDLInit::CleanupSprite(Sprite &sprite) {
 
 void SDLInit::DrawSprite(Sprite &sprite) {
 	//Set rendering space and render to screen
-	SDL_Rect renderRect = {(int)sprite.mPos.x, (int)sprite.mPos.y,
-		sprite.mSize.x, sprite.mSize.y };
+	SDL_Rect renderRect = {
+		int(sprite.mPos.x - gCamera.mPos.x),
+		int(sprite.mPos.y - gCamera.mPos.y),
+		sprite.mSize.x, sprite.mSize.y 
+	};
 
 	auto *anchorOffset = sprite.GetAnchorOffset();
 
@@ -243,8 +249,8 @@ void SDLInit::DrawEntityCollider(Entity &entity) {
 	
 	SDL_Rect rectangle;
 
-	rectangle.x = int(entity.mPos.x + entity.mTopLeftCollOffset.x);
-	rectangle.y = int(entity.mPos.y + entity.mTopLeftCollOffset.y);
+	rectangle.x = int(entity.mPos.x + entity.mTopLeftCollOffset.x - gCamera.mPos.x);
+	rectangle.y = int(entity.mPos.y + entity.mTopLeftCollOffset.y - gCamera.mPos.y);
 	rectangle.w = int(entity.mSize.x - entity.mTopLeftCollOffset.x - entity.mBottomRightCollOffset.x);
 	rectangle.h = int(entity.mSize.y - entity.mTopLeftCollOffset.y - entity.mBottomRightCollOffset.y);
 	SDL_RenderFillRect(gRenderer, &rectangle);

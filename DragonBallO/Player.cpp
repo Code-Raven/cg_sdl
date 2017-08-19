@@ -1,4 +1,5 @@
 #include "Player.h"
+#include "Camera.h"
 
 #define ANIM_RIGHT_COUNT 2
 #define ANIM_LEFT_COUNT 2
@@ -11,6 +12,7 @@
 #define SQRHYPE 1.4142f	
 
 extern float gDeltaTime;
+extern Camera gCamera;
 
 //Keys held down...
 extern int gHorizKeysHeld;	//keys a and b
@@ -64,6 +66,10 @@ namespace {
 }
 
 void Player::Update() {
+	if (gCamera.IsPanning()) {
+		return;
+	}
+
 	Move();
 	Attack();
 	Sprite::Update();

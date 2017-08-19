@@ -7,6 +7,8 @@
 class Entity {
 
 friend class SDLInit;
+friend class Camera;
+
 using UInt = unsigned int;
 using Int2 = MyMath::Int2;
 using Float2 = MyMath::Float2;
@@ -26,7 +28,6 @@ public:
 		Int2 bottomRightCollOffset = { 0, 0 });
 
 	void AddCollidableEntity(Entity &entity);
-	Float2 GetPosition();
 
 private:
 	void CheckCollision();

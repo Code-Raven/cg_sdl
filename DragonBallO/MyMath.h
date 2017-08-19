@@ -16,4 +16,5 @@ namespace MyMath {
 
 	int Abs(int num);
 	float Abs(float num);
+	float Lerp(float start, float end, float time);
 }

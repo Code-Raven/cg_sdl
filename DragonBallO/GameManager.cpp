@@ -3,10 +3,20 @@
 #include "Player.h"
 #include "Camera.h"
 
-#define SHOW_COLLIDERS false
+#define PAN_CAMERA_INSTEAD false
+#define SHOW_COLLIDERS true
+
+//Also camera dimension...
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+
+const int WORLD_WIDTH = 1280;
+const int WORLD_HEIGHT = 1280;
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
+
+Camera gCamera;
 
 static SDLInit sdlInit;
 
@@ -98,6 +108,13 @@ void GameManager::Update() {
 	player.Update();
 
 	//Needs to come last...
+	if (PAN_CAMERA_INSTEAD) {
+		gCamera.PanWith(player);
+	}
+	else {
+		gCamera.LookAt(player);
+	}
+	
 	sdlInit.Update();
 }
 

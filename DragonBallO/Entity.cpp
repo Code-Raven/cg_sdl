@@ -10,10 +10,6 @@ void Entity::SetPosition(float x, float y) {
 	mPos = { x, y };
 }
 
-Float2 Entity::GetPosition() {
-	return mPos;
-}
-
 void Entity::SetMoveSpeed(float moveSpeed) {
 	mMoveSpeed = moveSpeed;
 }
