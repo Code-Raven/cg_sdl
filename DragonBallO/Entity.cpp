@@ -21,6 +21,18 @@ void Entity::SetMoveSpeed(float moveSpeed) {
 void Entity::ConfigureCollision(bool canBePashedBack, Int2 topLeftCollOffset,
 	Int2 bottomRightCollOffset) {
 	mCanBePushedBack = canBePashedBack;
+
+	if (topLeftCollOffset.x + bottomRightCollOffset.x > mSize.x) {
+		printf("Warning: Entity horizontal collision offset set too large. "
+			"Collision offset won't be set.../n");
+		return;
+	}
+	if (topLeftCollOffset.y + bottomRightCollOffset.y > mSize.y) {
+		printf("Warning: Entity vertical collision offset set too large. "
+			"Collision offset won't be set.../n");
+		return;
+	}
+
 	mTopLeftCollOffset = topLeftCollOffset;
 	mBottomRightCollOffset = bottomRightCollOffset;
 }
@@ -31,7 +43,6 @@ void Entity::AddCollidableEntity(Entity &entity) {
 
 void Entity::CheckCollision() {
 	for (Entity *other : mCollidableEntities) {
-
 		Float2 topLeft = { mPos.x + mTopLeftCollOffset.x ,
 			mPos.y + mTopLeftCollOffset.y };
 		Float2 topRight = { mPos.x + mSize.x - mBottomRightCollOffset.x,
@@ -45,7 +56,6 @@ void Entity::CheckCollision() {
 			other->mPos.y + other->mTopLeftCollOffset.y };
 		Float2 otherBottomLeft = { other->mPos.x + other->mTopLeftCollOffset.x ,
 			other->mPos.y + other->mSize.y - other->mBottomRightCollOffset.y };
-
 
 		//Checking distances is faster then checking each collision point...
 		float collisionWidth = topRight.x - topLeft.x;
@@ -100,33 +110,3 @@ void Entity::CheckCollision() {
 void Entity::OnCollision(Entity *other) {
 	mHasCollided = true;
 }
-
-//bool Entity::CheckCollision(Entity &other) {
-//	float leftDist = other.mPos.x - mPos.x;// +mBottomRightCollOffset.x;
-//	float upDist = other.mPos.y - mPos.y;// +mBottomRightCollOffset.y;
-//	float rightDist = (mPos.x + mSize.x) - (other.mPos.x + other.mSize.x);// -mTopLeftCollOffset.x;
-//	float bottDist = (mPos.y + mSize.y) - (other.mPos.y + other.mSize.y);// -mTopLeftCollOffset.y;
-//
-//	bool collidesHoriz = (rightDist < mSize.x && leftDist < mSize.x);
-//	bool collidesVert = (bottDist < mSize.y && upDist < mSize.y);
-//	bool hasCollided = collidesHoriz && collidesVert;
-//
-//	//Handle push back...
-//	if (hasCollided && mCollisionBlocks) {
-//		//push left...
-//		if (leftDist < rightDist && leftDist < upDist && leftDist < bottDist) {
-//			other.mPos.x -= mSize.x - rightDist;
-//		}	//push right...
-//		else if (rightDist < upDist && rightDist < bottDist) {
-//			other.mPos.x += mSize.x - leftDist;
-//		}	//push up...
-//		else if (upDist < bottDist) {
-//			other.mPos.y -= mSize.y - bottDist;
-//		}	//push down...
-//		else {
-//			other.mPos.y += mSize.y - upDist;
-//		}
-//	}
-//
-//	return hasCollided;
-//}

@@ -7,6 +7,9 @@
 
 #define ANIM_ATTACK_COUNT 3
 
+//1.4142f = sqrt(sqr(1) + sqr(1))
+#define SQRHYPE 1.4142f	
+
 extern float gDeltaTime;
 
 //Keys held down...
@@ -75,9 +78,11 @@ void Player::Move() {
 	//Setting velocity...
 	float velocity = mMoveSpeed * gDeltaTime;
 
-	//Update position...	//TODO: Should create velocity vector and normalize...
-	mPos.x += gHorizKeysHeld * velocity;
-	mPos.y += gVertKeysHeld * velocity;
+	//Updates position. SQRHYPE is used so diagnal direction is NOT faster...
+	mPos.x += (gVertKeysHeld != 0 ? (gHorizKeysHeld * 
+		SQRHYPE)/2.0f : gHorizKeysHeld) * velocity;
+	mPos.y += (gHorizKeysHeld != 0 ? (gVertKeysHeld * 
+		SQRHYPE)/2.0f : gVertKeysHeld) * velocity;
 
 	//Update animations...
 	if (gHorizKeysHeld > 0) {
