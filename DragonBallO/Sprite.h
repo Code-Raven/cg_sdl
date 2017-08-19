@@ -36,6 +36,6 @@ protected:
 
 	//nullptr is better for ambiguity purposes...
 	SDL_Rect *mSpriteCLips = nullptr;
-	Int2 *mAnchorOffsets = nullptr;
+	Int2 *mAnimAnchorOffsets = nullptr;
 };
 

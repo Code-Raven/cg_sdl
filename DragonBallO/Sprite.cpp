@@ -8,9 +8,9 @@ Sprite::~Sprite() {
 		mSpriteCLips = nullptr;
 	}
 
-	if (mAnchorOffsets == nullptr) {
-		delete[] mAnchorOffsets;
-		mAnchorOffsets = nullptr;
+	if (mAnimAnchorOffsets == nullptr) {
+		delete[] mAnimAnchorOffsets;
+		mAnimAnchorOffsets = nullptr;
 	}
 }
 
@@ -33,7 +33,7 @@ void Sprite::InitSpriteSheet(UInt startClipIndex, UInt numSpriteCLipsX, UInt num
 	mNumSpriteClipsY = numSpriteClipsY;
 
 	mSpriteCLips = new SDL_Rect[mNumSpriteClips];
-	mAnchorOffsets = new Int2[mNumSpriteClips];
+	mAnimAnchorOffsets = new Int2[mNumSpriteClips];
 	mSpriteClipIndex = startClipIndex;
 }
 
@@ -57,13 +57,13 @@ void Sprite::SetSpriteClip(int x, int y, UInt w, UInt h, UInt index) {
 is for anchoring the sprite, so that it doesn't move.
 /************************************************************************/
 void Sprite::SetAnchorOffset(Int2 anchorOffset, UInt index) {
-	if (mAnchorOffsets == NULL) {
+	if (mAnimAnchorOffsets == NULL) {
 		printf("Cannot set clip offset. Please call InitSpriteSheet first.");
 		return;
 	}
 
 	int i = index % mNumSpriteClips;
-	mAnchorOffsets[i] = anchorOffset;
+	mAnimAnchorOffsets[i] = anchorOffset;
 }
 
 /************************************************************************/
@@ -79,5 +79,5 @@ SDL_Rect* Sprite::GetSpriteClip() {
 is for anchoring the sprite, so that it doesn't move.
 /************************************************************************/
 Int2* Sprite::GetAnchorOffset() {
-	return mAnchorOffsets + mSpriteClipIndex;
+	return mAnimAnchorOffsets + mSpriteClipIndex;
 }

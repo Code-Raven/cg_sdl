@@ -34,7 +34,7 @@ void InitEntities() {
 	tree2.SetPosition(200, 150);
 
 	//Setting size information...
-	player.SetSpriteSize(50, 50);
+	player.SetSpriteSize(70, 70);
 	tree.SetSpriteSize(64, 78);
 	tree2.SetSpriteSize(64, 78);
 
@@ -67,9 +67,9 @@ void InitEntities() {
 	player.SetAnchorOffset({-11, -13}, 35);			//first right attack...=>2
 
 	//Setup collision...
-	player.ConfigureCollision(true, { 0, 8 }, { 25, 10 });
-	tree.ConfigureCollision(true, { 0, 22 });
-	tree2.ConfigureCollision(false, { 0, 22 });
+	player.ConfigureCollision(true, { 0, 14 }, { 35, 16 });
+	tree.ConfigureCollision(true);
+	tree2.ConfigureCollision(false);
 
 	player.AddCollidableEntity(tree);
 	player.AddCollidableEntity(tree2);
@@ -93,9 +93,9 @@ void GameManager::Cleanup(){
 
 //TODO: Add deltatime later...
 void GameManager::Update() {
-	player.Update();
 	tree.Update();
 	tree2.Update();
+	player.Update();
 
 	//Needs to come last...
 	sdlInit.Update();
@@ -104,14 +104,14 @@ void GameManager::Update() {
 void GameManager::Render(){
 	sdlInit.Render();
 
-	sdlInit.DrawSprite(player);
 	sdlInit.DrawSprite(tree);
 	sdlInit.DrawSprite(tree2);
+	sdlInit.DrawSprite(player);
 
 	//Needs to come last...
 	if (SHOW_COLLIDERS) {
-		sdlInit.DrawEntityCollider(player);
 		sdlInit.DrawEntityCollider(tree);
 		sdlInit.DrawEntityCollider(tree2);
+		sdlInit.DrawEntityCollider(player);
 	}
 }
