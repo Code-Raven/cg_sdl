@@ -1,6 +1,6 @@
 #include "Sprite.h"
 
-using Int2 = MyMath::Int2;
+using namespace MyMath;
 
 Sprite::~Sprite() {
 	if (mSpriteCLips == nullptr) {

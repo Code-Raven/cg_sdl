@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-using Float2 = MyMath::Float2;
+using namespace MyMath;
 
 void Entity::SetPosition(float x, float y) {
 	mPos = { x, y };
@@ -14,32 +14,80 @@ void Entity::SetMoveSpeed(float moveSpeed) {
 	mMoveSpeed = moveSpeed;
 }
 
-bool Entity::CheckCollision(Entity &other) {
-	float leftDist = other.mPos.x - mPos.x;
-	float upDist = other.mPos.y - mPos.y;
-	float rightDist = (mPos.x + mSize.x) - (other.mPos.x + other.mSize.x);
-	float downDist = (mPos.y + mSize.y) - (other.mPos.y + other.mSize.y);
+void Entity::ConfigureCollision(bool blocksOnCollision,
+	Int2 topLeftCollOffset, Int2 bottomRightCollOffset) {
+	mCollPushesBackOthers = blocksOnCollision;
+	mTopLeftCollOffset = topLeftCollOffset;
+	mBottomRightCollOffset = bottomRightCollOffset;
+}
 
-	bool collidesHoriz = (rightDist < mSize.x && leftDist < mSize.x);
-	bool collidesVert = (downDist < mSize.y && upDist < mSize.y);
+bool Entity::CheckCollision(Entity &other) {
+	Float2 topLeft = { mPos.x + mTopLeftCollOffset.x ,
+		mPos.y + mTopLeftCollOffset.y };
+	Float2 topRight = { mPos.x + mSize.x - mBottomRightCollOffset.x,
+		mPos.y + mTopLeftCollOffset.y };
+	Float2 bottomLeft = { mPos.x + mTopLeftCollOffset.x ,
+		mPos.y + mSize.y - mBottomRightCollOffset.y };
+	Float2 bottomRight = { mPos.x + mSize.x - mBottomRightCollOffset.x,
+		mPos.y + mSize.y - mBottomRightCollOffset.y };
+
+	Float2 otherTopLeft = { other.mPos.x + other.mTopLeftCollOffset.x ,
+		other.mPos.y + other.mTopLeftCollOffset.y };
+	Float2 otherTopRight = { other.mPos.x + other.mSize.x - other.mBottomRightCollOffset.x,
+		other.mPos.y + other.mTopLeftCollOffset.y };
+	Float2 otherBottomLeft = { other.mPos.x + other.mTopLeftCollOffset.x ,
+		other.mPos.y + other.mSize.y - other.mBottomRightCollOffset.y };
+	Float2 otherBottomRight = { other.mPos.x + other.mSize.x - other.mBottomRightCollOffset.x,
+		other.mPos.y + other.mSize.y - other.mBottomRightCollOffset.y };
+
+	
+	//Checking distances is faster then checking each collision point...
+	float collisionWidth = topRight.x - topLeft.x;
+	float collisionHeight = bottomLeft.y - topLeft.y;
+
+	float leftDist = otherTopLeft.x - topLeft.x;
+	float rightDist = topRight.x - otherTopRight.x;
+	bool collidesHoriz = leftDist < collisionWidth && rightDist < collisionWidth;
+
+	float topDist = otherTopLeft.y - topLeft.y;
+	float bottomDist = bottomLeft.y - otherBottomLeft.y;
+	bool collidesVert = topDist < collisionHeight && bottomDist < collisionHeight;
+
 	bool hasCollided = collidesHoriz && collidesVert;
 
-	//Handle push back...
-	if (hasCollided && mCollisionBlocks) {
-		//push left...
-		if (leftDist < rightDist && leftDist < upDist && leftDist < downDist) {
-			other.mPos.x -= mSize.x - rightDist;
-		}	//push right...
-		else if (rightDist < upDist && rightDist < downDist) {
-			other.mPos.x += mSize.x - leftDist;
-		}	//push up...
-		else if (upDist < downDist) {
-			other.mPos.y -= mSize.y - downDist;
-		}	//push down...
-		else {
-			other.mPos.y += mSize.y - upDist;
-		}
+	if (hasCollided && mCollPushesBackOthers) {
+		std::printf("Colliding!!!!");
 	}
 
 	return hasCollided;
 }
+
+//bool Entity::CheckCollision(Entity &other) {
+//	float leftDist = other.mPos.x - mPos.x;// +mBottomRightCollOffset.x;
+//	float upDist = other.mPos.y - mPos.y;// +mBottomRightCollOffset.y;
+//	float rightDist = (mPos.x + mSize.x) - (other.mPos.x + other.mSize.x);// -mTopLeftCollOffset.x;
+//	float bottDist = (mPos.y + mSize.y) - (other.mPos.y + other.mSize.y);// -mTopLeftCollOffset.y;
+//
+//	bool collidesHoriz = (rightDist < mSize.x && leftDist < mSize.x);
+//	bool collidesVert = (bottDist < mSize.y && upDist < mSize.y);
+//	bool hasCollided = collidesHoriz && collidesVert;
+//
+//	//Handle push back...
+//	if (hasCollided && mCollisionBlocks) {
+//		//push left...
+//		if (leftDist < rightDist && leftDist < upDist && leftDist < bottDist) {
+//			other.mPos.x -= mSize.x - rightDist;
+//		}	//push right...
+//		else if (rightDist < upDist && rightDist < bottDist) {
+//			other.mPos.x += mSize.x - leftDist;
+//		}	//push up...
+//		else if (upDist < bottDist) {
+//			other.mPos.y -= mSize.y - bottDist;
+//		}	//push down...
+//		else {
+//			other.mPos.y += mSize.y - upDist;
+//		}
+//	}
+//
+//	return hasCollided;
+//}

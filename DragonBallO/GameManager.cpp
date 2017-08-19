@@ -16,24 +16,29 @@ namespace {
 	Camera camera;
 	Player player;
 	Sprite tree;
+	Sprite tree2;
 }
 
 void InitEntities() {
 	//Setting path names...
-	player.SetTexturePath("textures/link_sheet.png");
+	player.SetTexturePath("textures/link_sheet_test.png");
 	tree.SetTexturePath("textures/tree_green.gif");
+	tree2.SetTexturePath("textures/tree_green_test.gif");
 
 	//Loading textures...
 	sdlInit.LoadTexture(player);
 	sdlInit.LoadTexture(tree);
+	sdlInit.LoadTexture(tree2);
 
 	//Setting position information...
 	player.SetPosition(0, 0);
 	tree.SetPosition(200, 300);
+	tree2.SetPosition(200, 150);
 
 	//Setting size information...
 	player.SetSpriteSize(50, 50);
 	tree.SetSpriteSize(64, 78);
+	tree2.SetSpriteSize(64, 78);
 
 	//Set sprite sheet texture coordinates...
 	player.InitSpriteSheet(0, 14, 6);
@@ -64,7 +69,8 @@ void InitEntities() {
 	player.SetAnchorOffset({-11, -13}, 35);			//first right attack...=>2
 
 	//Setup collision...
-	tree.SetCollision(true);
+	tree.ConfigureCollision(true);
+	tree2.ConfigureCollision(true);//, { 32, 0 }, { 0, 0 });
 }
 
 bool GameManager::Init(){
@@ -79,6 +85,7 @@ bool GameManager::Init(){
 void GameManager::Cleanup(){
 	sdlInit.CleanupSprite(player);
 	sdlInit.CleanupSprite(tree);
+	sdlInit.CleanupSprite(tree2);
 	sdlInit.Cleanup();
 }
 
@@ -87,7 +94,8 @@ void GameManager::Update() {
 	player.Move();
 	player.Attack();
 
-	(void)tree.CheckCollision(player);
+	//(void)tree.CheckCollision(player);
+	(void)tree2.CheckCollision(player);
 
 	sdlInit.Update();
 }
@@ -95,5 +103,6 @@ void GameManager::Update() {
 void GameManager::Render(){
 	sdlInit.Render();
 	sdlInit.DrawSprite(tree);
+	sdlInit.DrawSprite(tree2);
 	sdlInit.DrawSprite(player);
 }

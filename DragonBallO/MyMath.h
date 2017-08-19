@@ -13,4 +13,7 @@ namespace MyMath {
 		float x{0.f};
 		float y{0.f};
 	};
+
+	int Abs(int num);
+	float Abs(float num);
 }
