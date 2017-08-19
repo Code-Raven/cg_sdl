@@ -68,7 +68,7 @@ void InitEntities() {
 
 	//Setup collision...
 	player.ConfigureCollision(true, { 0, 8 }, { 25, 10 });
-	tree.ConfigureCollision(false, { 0, 22 });
+	tree.ConfigureCollision(true, { 0, 22 });
 	tree2.ConfigureCollision(false, { 0, 22 });
 
 	player.AddCollidableEntity(tree);

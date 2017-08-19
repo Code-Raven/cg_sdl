@@ -65,7 +65,21 @@ void Entity::CheckCollision() {
 			other->OnCollision(this);
 			OnCollision(other);
 
-			if (mCanBePushedBack) {
+			if (other->mCanBePushedBack) {
+				if (rightDist > leftDist && rightDist > bottomDist && rightDist > topDist) {
+					other->mPos.x += rightDist - collisionWidth;
+				}
+				else if (topDist > bottomDist && topDist > leftDist) {
+					other->mPos.y += collisionHeight - topDist;
+				}
+				else if (leftDist > bottomDist) {
+					other->mPos.x += collisionWidth - leftDist;
+				}
+				else {
+					other->mPos.y += bottomDist - collisionHeight;
+				}
+			}
+			else if (mCanBePushedBack) {
 				if (rightDist > leftDist && rightDist > bottomDist && rightDist > topDist) {
 					mPos.x += collisionWidth - rightDist;
 				}
