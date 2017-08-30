@@ -25,5 +25,15 @@ namespace MyMath {
 
 	int Abs(int num);
 	float Abs(float num);
+
+	int Max(int leftNum, int rightNum);
+	float Max(float leftNum, float rightNum);
+
+	int Min(int leftNum, int rightNum);
+	float Min(float leftNum, float rightNum);
+
+	int Clamp(int value, int min, int max);
+	float Clamp(float value, float min, float max);
+
 	float Lerp(float start, float end, float time);
 }

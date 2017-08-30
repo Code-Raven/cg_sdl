@@ -8,9 +8,6 @@
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
-extern const int WORLD_WIDTH;
-extern const int WORLD_HEIGHT;
-
 class Camera
 {
 
@@ -33,8 +30,6 @@ public:
 
 private:
 	Float2 mPos;
-	Float2 mStartPanPos;
-	Float2 mEndPanPos;
 
 	Mode mMode{ Mode::FOLLOW };
 	Entity *mLookAtTarget = nullptr;

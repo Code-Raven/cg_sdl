@@ -1,14 +1,17 @@
 #pragma once
 #include "MyMath.h"
+#include "Camera.h"
 
-const int NUM_GRID_ROWS = 2;
-const int NUM_GRID_COLUMNS = 2;
+const int NUM_GRID_ROWS = 4;
+const int NUM_GRID_COLUMNS = 5;
 const int NUM_ZONES = NUM_GRID_ROWS * NUM_GRID_COLUMNS;
 
 using namespace MyMath;
 
 class World
 {
+friend class Camera;
+
 public:
 	World() {};
 	~World() {};
@@ -21,5 +24,9 @@ public:
 
 public:
 	RectBoundary worldGrid[NUM_GRID_ROWS][NUM_GRID_COLUMNS];
+
+public:
+	int mWidth{0};
+	int mHeight{0};
 };
 

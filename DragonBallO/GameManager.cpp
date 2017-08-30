@@ -4,15 +4,12 @@
 #include "Player.h"
 #include "Camera.h"
 
-#define CAMERA_MODE Camera::Mode::FOLLOW
+#define CAMERA_MODE Camera::Mode::PAN
 #define SHOW_COLLIDERS true
 
 //Also camera dimension...
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
-
-const int WORLD_WIDTH = SCREEN_WIDTH * NUM_GRID_COLUMNS;
-const int WORLD_HEIGHT = SCREEN_HEIGHT * NUM_GRID_ROWS;
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
@@ -86,7 +83,7 @@ void InitEntities() {
 	player.AddCollidableEntity(boulder);
 
 	//TODO: Don't hard-code this...
-	gWorld.InitWorldGrid({ 5, 14, 70 - 35, 70 - 16 });
+	gWorld.InitWorldGrid({ 5, 70 - 35, 14, 70 - 16});
 }
 
 bool GameManager::Init(){

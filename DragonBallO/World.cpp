@@ -3,13 +3,13 @@
 extern const int SCREEN_WIDTH;
 extern const int SCREEN_HEIGHT;
 
-//extern const int WORLD_WIDTH;
-//extern const int WORLD_HEIGHT;
-
 void World::InitWorldGrid(RectBoundary overlap)
 {
 	float overlapW = overlap.right - overlap.left;
-	float overlapH = overlap.top - overlap.bottom;
+	float overlapH = overlap.bottom - overlap.top;
+
+	worldGrid[0][0].right = float(SCREEN_WIDTH);
+	worldGrid[0][0].bottom = float(SCREEN_HEIGHT);
 
 	for (int indX = 1; indX < NUM_GRID_COLUMNS; ++indX) {
 		RectBoundary &nextScrn = worldGrid[0][indX];
@@ -39,9 +39,14 @@ void World::InitWorldGrid(RectBoundary overlap)
 			nextScrn.bottom = nextScrn.top + SCREEN_HEIGHT;
 		}
 	}
+
+	mWidth = int(worldGrid[0][NUM_GRID_COLUMNS - 1].right);
+	mHeight = int(worldGrid[NUM_GRID_ROWS - 1][0].bottom);
 }
 
 RectBoundary World::GetZoneBoundary(int indX, int indY) {
+	indX = Clamp(indX, 0, NUM_GRID_COLUMNS - 1);
+	indY = Clamp(indY, 0, NUM_GRID_ROWS - 1);
 	return worldGrid[indY][indX];
 }
 

@@ -6,14 +6,14 @@ extern float gDeltaTime;
 extern World gWorld;
 
 namespace {
+	RectBoundary nextZoneBound;
+	RectBoundary lastZoneBound;
 	float panTime = 1.0f;
 	int zoneIndX = 0;
 	int zoneIndY = 0;
 }
 
 void Camera::RestrictTargetToWorld(Entity &target) {
-	const auto &zoneBound = gWorld.GetZoneBoundary(zoneIndX, zoneIndY);
-
 	int targetWidth = target.mSize.x - target.mBottomRightCollOffset.x - target.mTopLeftCollOffset.x;
 	int targetHeight = target.mSize.y - target.mBottomRightCollOffset.y - target.mTopLeftCollOffset.y;
 
@@ -29,8 +29,8 @@ void Camera::RestrictTargetToWorld(Entity &target) {
 		target.mPos.x = -(float)target.mTopLeftCollOffset.x;
 		target.mPushbackSides |= 1 << 0;	//can't pushback from right...
 	}	//collides right...
-	else if (targetBound.right > WORLD_WIDTH) {
-		target.mPos.x = float(WORLD_WIDTH - target.mSize.x + target.mBottomRightCollOffset.x);
+	else if (targetBound.right > gWorld.mWidth) {
+		target.mPos.x = float(gWorld.mWidth - target.mSize.x + target.mBottomRightCollOffset.x);
 		target.mPushbackSides |= 1 << 2;	//can't pushback from left...
 	}
 
@@ -39,8 +39,8 @@ void Camera::RestrictTargetToWorld(Entity &target) {
 		target.mPos.y = -(float)target.mTopLeftCollOffset.y;
 		target.mPushbackSides |= 1 << 3;	//can't pushback from bottom...
 	}	//collides bottom...
-	else if (targetBound.bottom > WORLD_HEIGHT) {
-		target.mPos.y = float(WORLD_HEIGHT - target.mSize.y + target.mBottomRightCollOffset.y);
+	else if (targetBound.bottom > gWorld.mHeight) {
+		target.mPos.y = float(gWorld.mHeight - target.mSize.y + target.mBottomRightCollOffset.y);
 		target.mPushbackSides |= 1 << 1;	//can't pushback from top...
 	}
 }
@@ -65,59 +65,63 @@ void Camera::LookAt(Entity &target) {
 			mPos.y = 0.0f;
 		}
 
-		if (mPos.x + SCREEN_WIDTH > WORLD_WIDTH) {
-			mPos.x = float(WORLD_WIDTH - SCREEN_WIDTH);
+		if (mPos.x + SCREEN_WIDTH > gWorld.mWidth) {
+			mPos.x = float(gWorld.mWidth - SCREEN_WIDTH);
 		}
-		if (mPos.y + SCREEN_HEIGHT > WORLD_HEIGHT) {
-			mPos.y = float(WORLD_HEIGHT - SCREEN_HEIGHT);
+		if (mPos.y + SCREEN_HEIGHT > gWorld.mHeight) {
+			mPos.y = float(gWorld.mHeight - SCREEN_HEIGHT);
 		}
 
 		return;
 	}
 
 	if (panTime > 1) {
-		//else, camera pans over to next screen (when player outside camera bounds...
+		auto &zoneBound = gWorld.GetZoneBoundary(zoneIndX, zoneIndY);
 		int targetWidth = target.mSize.x - target.mBottomRightCollOffset.x - target.mTopLeftCollOffset.x;
 		int targetHeight = target.mSize.y - target.mBottomRightCollOffset.y - target.mTopLeftCollOffset.y;
 
-		float nextRight = float((SCREEN_WIDTH + (SCREEN_WIDTH * zoneIndX) -
-			(targetWidth * zoneIndX)));
-		float nextDown = float((SCREEN_HEIGHT + (SCREEN_HEIGHT * zoneIndY) -
-			(target.mBottomRightCollOffset.y * zoneIndY)));
-		float nextLeft = float((SCREEN_WIDTH * zoneIndX) -
-			(target.mTopLeftCollOffset.x * zoneIndX));
+		RectBoundary targetBound{
+			target.mPos.x + target.mTopLeftCollOffset.x,				//left...
+			target.mPos.x + target.mTopLeftCollOffset.x + targetWidth,	//right...
+			target.mPos.y + target.mTopLeftCollOffset.y,				//top...
+			target.mPos.y + target.mTopLeftCollOffset.y + targetHeight,	//bottom...
+		};
 
-		bool panRight = target.mPos.x + targetWidth > nextRight;
-		bool panDown = target.mPos.y + targetHeight + target.mBottomRightCollOffset.y > nextDown;
-		//bool panLeft = target.mPos.x + target.mTopLeftCollOffset.x < nextLeft;
+		bool panRight = targetBound.right > zoneBound.right;
+		bool panLeft = targetBound.left < zoneBound.left;
+		bool panUp = targetBound.top < zoneBound.top;
+		bool panDown = targetBound.bottom > zoneBound.bottom;
 
 		if (panRight) {
-			mStartPanPos = mEndPanPos = mPos;
-			mEndPanPos.x = nextRight - targetWidth;
-			++zoneIndX;
+			nextZoneBound = gWorld.GetZoneBoundary(++zoneIndX, zoneIndY);
+			lastZoneBound = zoneBound;
 			panTime = 0.0f;
 			printf("Pan Right...!\n");
 		}
-		//else if (panLeft) {
-		//	mStartPanPos = mEndPanPos = mPos;
-		//	mEndPanPos.x = nextLeft + targetWidth;
-		//	--horizScrnIndex;
-		//	panTime = 0.0f;
-		//	printf("Pan Left...!\n");
-		//}
-
-		if (panDown) {
-			mStartPanPos = mEndPanPos = mPos;
-			mEndPanPos.y = nextDown - targetHeight;
-			++zoneIndY;
+		else if (panLeft) {
+			nextZoneBound = gWorld.GetZoneBoundary(--zoneIndX, zoneIndY);
+			lastZoneBound = zoneBound;
 			panTime = 0.0f;
-			printf("Pan Down...!\n");
+			printf("Pan Left...!\n");
+		}
+		
+		if (panDown) {
+			nextZoneBound = gWorld.GetZoneBoundary(zoneIndX, ++zoneIndY);
+			lastZoneBound = zoneBound;
+			panTime = 0.0f;
+			printf("Pan Left...!\n");
+		}
+		else if (panUp) {
+			nextZoneBound = gWorld.GetZoneBoundary(zoneIndX, --zoneIndY);
+			lastZoneBound = zoneBound;
+			panTime = 0.0f;
+			printf("Pan Left...!\n");
 		}
 	}
 
 	panTime += gDeltaTime;
-	mPos.x = Lerp(mStartPanPos.x, mEndPanPos.x, panTime);
-	mPos.y = Lerp(mStartPanPos.y, mEndPanPos.y, panTime);
+	mPos.x = Lerp(lastZoneBound.left, nextZoneBound.left, panTime);
+	mPos.y = Lerp(lastZoneBound.top, nextZoneBound.top, panTime);
 }
 
 bool Camera::IsPanning() {
