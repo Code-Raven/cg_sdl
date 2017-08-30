@@ -82,7 +82,7 @@ void Entity::CheckCollision() {
 
 			if (other->mCanBePushedBack) {
 				if (rightDist > leftDist && rightDist > bottomDist && rightDist > topDist) {
-					if (other->mBlockedSides & 1 << 0) {
+					if (other->mPushbackSides & 1 << 0) {
 						mPos.x += collisionWidth - rightDist;
 					}
 					else {
@@ -90,7 +90,7 @@ void Entity::CheckCollision() {
 					}
 				}
 				else if (topDist > bottomDist && topDist > leftDist) {
-					if (other->mBlockedSides & 1 << 1) {
+					if (other->mPushbackSides & 1 << 1) {
 						mPos.y += topDist - collisionHeight;
 					}
 					else {
@@ -98,7 +98,7 @@ void Entity::CheckCollision() {
 					}
 				}
 				else if (leftDist > bottomDist) {
-					if (other->mBlockedSides & 1 << 2) {
+					if (other->mPushbackSides & 1 << 2) {
 						mPos.x += leftDist - collisionWidth;
 					}
 					else {
@@ -106,7 +106,7 @@ void Entity::CheckCollision() {
 					}
 				}
 				else {
-					if (other->mBlockedSides & 1 << 3) {
+					if (other->mPushbackSides & 1 << 3) {
 						mPos.y += collisionHeight - bottomDist;
 					}
 					else {

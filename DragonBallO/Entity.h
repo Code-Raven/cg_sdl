@@ -33,7 +33,7 @@ public:
 private:
 	void CheckCollision();
 
-	UByte mBlockedSides{ 0 };
+	UByte mPushbackSides{ 0 };
 
 protected:
 	Float2 mPos;

@@ -242,7 +242,7 @@ void SDLInit::DrawEntityCollider(Entity &entity) {
 		SDL_SetRenderDrawColor(gRenderer, 255, 0, 32, 48);
 		//TODO: Not the best place to put this, but works...
 		entity.mHasCollided = false;
-		entity.mBlockedSides = 0;
+		entity.mPushbackSides = 0;
 	}
 	else {
 		SDL_SetRenderDrawColor(gRenderer, 32, 0, 255, 48);

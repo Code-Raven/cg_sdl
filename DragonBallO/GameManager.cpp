@@ -1,25 +1,24 @@
 #include "GameManager.h"
 #include "SDLInit.h"
+#include "World.h"
 #include "Player.h"
 #include "Camera.h"
 
-#define CAMERA_MODE Camera::Mode::PAN
+#define CAMERA_MODE Camera::Mode::FOLLOW
 #define SHOW_COLLIDERS true
 
 //Also camera dimension...
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-const int WORLD_WIDTH = 1280;
-const int WORLD_HEIGHT = 960;//960;
-
-const int NUM_GRID_ROWS = WORLD_HEIGHT/SCREEN_HEIGHT;
-const int NUM_GRID_COLUMNS = WORLD_WIDTH/SCREEN_WIDTH;
+const int WORLD_WIDTH = SCREEN_WIDTH * NUM_GRID_COLUMNS;
+const int WORLD_HEIGHT = SCREEN_HEIGHT * NUM_GRID_ROWS;
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
 
 Camera gCamera(CAMERA_MODE);
+World gWorld;
 
 static SDLInit sdlInit;
 
@@ -27,46 +26,6 @@ namespace {
 	Player player;
 	Sprite tree;
 	Sprite boulder;
-
-	using RectBoundary = MyMath::RectBoundary;
-	RectBoundary worldGrid[NUM_GRID_ROWS][NUM_GRID_COLUMNS];
-
-	//TODO: Create world map...
-	void InitWorldGrid(RectBoundary overlap) {
-		float overlapW = overlap.right - overlap.left;
-		float overlapH = overlap.top - overlap.bottom;
-
-		for (int rowIndx = 0; rowIndx < NUM_GRID_ROWS; ++rowIndx) {
-			for (int colIndx = 0; colIndx < NUM_GRID_COLUMNS; ++colIndx) {
-				RectBoundary &nextScrn = worldGrid[rowIndx][colIndx];
-				/*RectBoundary &prevScrn = (rowIndx - 1 < 0 || colIndx - 1 < 0) ?
-					nextScrn : worldGrid[rowIndx - 1][colIndx - 1];*/
-
-				if (rowIndx == 0) {
-					nextScrn.left = 0;
-					nextScrn.right = SCREEN_WIDTH;
-				}
-				if (colIndx == 0) {
-					nextScrn.top = 0;
-					nextScrn.bottom = SCREEN_HEIGHT;
-				}
-
-
-
-				//rowIndx at 0
-				nextScrn.left = 0;
-				nextScrn.right = SCREEN_WIDTH;
-				nextScrn.top = 0;
-				nextScrn.bottom = SCREEN_HEIGHT;
-
-				//rowIndx at 1
-				nextScrn.left = prevScrn.right - overlapW;
-				nextScrn.right = nextScrn.left + SCREEN_WIDTH;
-				nextScrn.top = 0;
-				nextScrn.bottom = SCREEN_HEIGHT;
-			}
-		}
-	}
 }
 
 void InitEntities() {
@@ -125,6 +84,9 @@ void InitEntities() {
 
 	player.AddCollidableEntity(tree);
 	player.AddCollidableEntity(boulder);
+
+	//TODO: Don't hard-code this...
+	gWorld.InitWorldGrid({ 5, 14, 70 - 35, 70 - 16 });
 }
 
 bool GameManager::Init(){

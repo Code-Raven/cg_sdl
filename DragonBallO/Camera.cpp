@@ -3,48 +3,45 @@
 using namespace MyMath;
 
 extern float gDeltaTime;
+extern World gWorld;
 
 namespace {
 	float panTime = 1.0f;
-	int horizScrnIndex = 0;
-	int vertScrnIndex = 0;
+	int zoneIndX = 0;
+	int zoneIndY = 0;
 }
 
 void Camera::RestrictTargetToWorld(Entity &target) {
+	const auto &zoneBound = gWorld.GetZoneBoundary(zoneIndX, zoneIndY);
+
 	int targetWidth = target.mSize.x - target.mBottomRightCollOffset.x - target.mTopLeftCollOffset.x;
 	int targetHeight = target.mSize.y - target.mBottomRightCollOffset.y - target.mTopLeftCollOffset.y;
 
-	int lookAtTargetWidth = mLookAtTarget == nullptr ? target.mSize.x -
-		target.mBottomRightCollOffset.x - target.mTopLeftCollOffset.x : mLookAtTarget->mSize.x -
-		mLookAtTarget->mBottomRightCollOffset.x - mLookAtTarget->mTopLeftCollOffset.x;
-	int lookAtTargetHeight = mLookAtTarget == nullptr ? target.mSize.y -
-		target.mBottomRightCollOffset.y - target.mTopLeftCollOffset.y : mLookAtTarget->mSize.y -
-		mLookAtTarget->mBottomRightCollOffset.y - mLookAtTarget->mTopLeftCollOffset.y;
+	RectBoundary targetBound {
+		target.mPos.x + target.mTopLeftCollOffset.x,				//left...
+		target.mPos.x + target.mTopLeftCollOffset.x + targetWidth,	//right...
+		target.mPos.y + target.mTopLeftCollOffset.y,				//top...
+		target.mPos.y + target.mTopLeftCollOffset.y + targetHeight,	//bottom...
+	};
 
-	int maxNumHorizScrns = WORLD_WIDTH/SCREEN_WIDTH - 1;
-	int maxNumVertScrns = WORLD_HEIGHT/SCREEN_HEIGHT - 1;
-
-	float maxHoriz = mMode == Mode::FOLLOW ? WORLD_WIDTH : float((SCREEN_WIDTH +
-		(SCREEN_WIDTH * maxNumHorizScrns) - (lookAtTargetWidth * maxNumHorizScrns)));
-	float maxVert = mMode == Mode::FOLLOW ? WORLD_HEIGHT : float((SCREEN_HEIGHT +
-		(SCREEN_HEIGHT * maxNumVertScrns) - (lookAtTargetHeight * maxNumVertScrns)));
-
-	//Blocks left side...
-	if (target.mPos.x + target.mTopLeftCollOffset.x < 0.0f) {
+	//collides left...
+	if (targetBound.left < 0.0f) {
 		target.mPos.x = -(float)target.mTopLeftCollOffset.x;
-		target.mBlockedSides |= 1 << 0;	//blocks right...
-	}	//blocks right side...
-	else if (target.mPos.x + targetWidth > maxHoriz) {
-		target.mPos.x = float(maxHoriz - target.mSize.x + target.mBottomRightCollOffset.x);
-		target.mBlockedSides |= 1 << 2;	//blocks left...
-	}	//blocks top side...
-	if (target.mPos.y + target.mTopLeftCollOffset.y < 0.0f) {
-		target.mPos.y = (float)-target.mTopLeftCollOffset.y;
-		target.mBlockedSides |= 1 << 3;	//blocks bottom...
-	}	//blocks bottom side...
-	else if (target.mPos.y + target.mTopLeftCollOffset.y + targetHeight > maxVert) {
-		target.mPos.y = float(maxVert - target.mSize.y + target.mBottomRightCollOffset.y);
-		target.mBlockedSides |= 1 << 1;	//blocks top...
+		target.mPushbackSides |= 1 << 0;	//can't pushback from right...
+	}	//collides right...
+	else if (targetBound.right > WORLD_WIDTH) {
+		target.mPos.x = float(WORLD_WIDTH - target.mSize.x + target.mBottomRightCollOffset.x);
+		target.mPushbackSides |= 1 << 2;	//can't pushback from left...
+	}
+
+	//collides top...
+	if (targetBound.top < 0.0f) {
+		target.mPos.y = -(float)target.mTopLeftCollOffset.y;
+		target.mPushbackSides |= 1 << 3;	//can't pushback from bottom...
+	}	//collides bottom...
+	else if (targetBound.bottom > WORLD_HEIGHT) {
+		target.mPos.y = float(WORLD_HEIGHT - target.mSize.y + target.mBottomRightCollOffset.y);
+		target.mPushbackSides |= 1 << 1;	//can't pushback from top...
 	}
 }
 
@@ -61,9 +58,6 @@ void Camera::LookAt(Entity &target) {
 		SetPos({ target.mPos.x + (target.mSize.x / 2.0f), target.mPos.y + (target.mSize.y / 2.0f) });
 
 		//Restricting camera to world coords...
-		float halfWidth = SCREEN_WIDTH / 2.0f;
-		float halfHeight = SCREEN_HEIGHT / 2.0f;
-
 		if (mPos.x < 0.0f) {
 			mPos.x = 0.0f;
 		}
@@ -86,12 +80,12 @@ void Camera::LookAt(Entity &target) {
 		int targetWidth = target.mSize.x - target.mBottomRightCollOffset.x - target.mTopLeftCollOffset.x;
 		int targetHeight = target.mSize.y - target.mBottomRightCollOffset.y - target.mTopLeftCollOffset.y;
 
-		float nextRight = float((SCREEN_WIDTH + (SCREEN_WIDTH * horizScrnIndex) -
-			(targetWidth * horizScrnIndex)));
-		float nextDown = float((SCREEN_HEIGHT + (SCREEN_HEIGHT * vertScrnIndex) -
-			(target.mBottomRightCollOffset.y * vertScrnIndex)));
-		float nextLeft = float((SCREEN_WIDTH * horizScrnIndex) -
-			(target.mTopLeftCollOffset.x * horizScrnIndex));
+		float nextRight = float((SCREEN_WIDTH + (SCREEN_WIDTH * zoneIndX) -
+			(targetWidth * zoneIndX)));
+		float nextDown = float((SCREEN_HEIGHT + (SCREEN_HEIGHT * zoneIndY) -
+			(target.mBottomRightCollOffset.y * zoneIndY)));
+		float nextLeft = float((SCREEN_WIDTH * zoneIndX) -
+			(target.mTopLeftCollOffset.x * zoneIndX));
 
 		bool panRight = target.mPos.x + targetWidth > nextRight;
 		bool panDown = target.mPos.y + targetHeight + target.mBottomRightCollOffset.y > nextDown;
@@ -100,7 +94,7 @@ void Camera::LookAt(Entity &target) {
 		if (panRight) {
 			mStartPanPos = mEndPanPos = mPos;
 			mEndPanPos.x = nextRight - targetWidth;
-			++horizScrnIndex;
+			++zoneIndX;
 			panTime = 0.0f;
 			printf("Pan Right...!\n");
 		}
@@ -115,7 +109,7 @@ void Camera::LookAt(Entity &target) {
 		if (panDown) {
 			mStartPanPos = mEndPanPos = mPos;
 			mEndPanPos.y = nextDown - targetHeight;
-			++vertScrnIndex;
+			++zoneIndY;
 			panTime = 0.0f;
 			printf("Pan Down...!\n");
 		}

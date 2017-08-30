@@ -1,6 +1,7 @@
 #pragma once
 
 #include "MyMath.h"
+#include "World.h"
 #include "Entity.h"
 
 //Screen dimension constants

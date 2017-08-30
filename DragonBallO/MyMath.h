@@ -15,6 +15,8 @@ namespace MyMath {
 		float y{0.f};
 	};
 	struct RectBoundary {
+		RectBoundary(){}
+		RectBoundary(float l, float r, float t, float b) : left{l}, right{r}, top{t}, bottom{b} {}
 		float left{0};
 		float right{0};
 		float top{0};
