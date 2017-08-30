@@ -1,5 +1,3 @@
-
-
 class GameManager{
 	public:
 		bool Init();
