@@ -3,25 +3,24 @@
 #include "Player.h"
 #include "Camera.h"
 
-#define PAN_CAMERA_INSTEAD true
-#define SHOW_COLLIDERS false
+#define CAMERA_MODE Camera::Mode::PAN
+#define SHOW_COLLIDERS true
 
 //Also camera dimension...
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
 
-const int WORLD_WIDTH = 2400;
-const int WORLD_HEIGHT = 2400;
+const int WORLD_WIDTH = 1280;
+const int WORLD_HEIGHT = 960;//960;
 
 extern SDL_Window* gWindow;
 extern SDL_Renderer* gRenderer;
 
-Camera gCamera;
+Camera gCamera(CAMERA_MODE);
 
 static SDLInit sdlInit;
 
 namespace {
-	Camera camera;
 	Player player;
 	Sprite tree;
 	Sprite boulder;
@@ -77,7 +76,7 @@ void InitEntities() {
 	player.SetAnchorOffset({-11, -13}, 35);			//first right attack...=>2
 
 	//Setup collision...
-	player.ConfigureCollision(true, { 0, 14 }, { 35, 16 });
+	player.ConfigureCollision(true, { 5, 14 }, { 35, 16 });
 	tree.ConfigureCollision(false);
 	boulder.ConfigureCollision(true);
 
@@ -108,13 +107,10 @@ void GameManager::Update() {
 	player.Update();
 
 	//Needs to come last...
-	if (PAN_CAMERA_INSTEAD) {
-		gCamera.PanWith(player);
-	}
-	else {
-		gCamera.LookAt(player);
-	}
-	
+	gCamera.LookAt(player);
+
+	//gCamera.RestrictTargetToWorld(player);
+
 	sdlInit.Update();
 }
 
