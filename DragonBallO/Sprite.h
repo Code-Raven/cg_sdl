@@ -14,7 +14,6 @@ public:
 	virtual ~Sprite() override;
 
 	void SetTexturePath(const char* texturePath);
-	void SetSpriteSize(int width, int height);
 
 	//Call InitSPriteSheet before calling SetSpriteClip...
 	void InitSpriteSheet(UInt startClipIndex, UInt numSpriteCLipsX, UInt numSpriteClipsY);

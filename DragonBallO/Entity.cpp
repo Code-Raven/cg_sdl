@@ -10,17 +10,22 @@ void Entity::Update() {
 	gCamera.RestrictTargetToWorld(*this);
 }
 
-void Entity::SetPosition(float x, float y) {
-	mPos = { x, y };
+void Entity::SetPosition(Float2 pos) {
+	mPos = pos;
+}
+
+void Entity::SetSize(int width, int height) {
+	mSize = { width, height };
 }
 
 void Entity::SetMoveSpeed(float moveSpeed) {
 	mMoveSpeed = moveSpeed;
 }
 
-void Entity::ConfigureCollision(bool canBePashedBack, Int2 topLeftCollOffset,
-	Int2 bottomRightCollOffset) {
-	mCanBePushedBack = canBePashedBack;
+void Entity::ConfigureCollision(bool canPushBack, bool canBePushedBack,
+	Int2 topLeftCollOffset, Int2 bottomRightCollOffset) {
+	mCanPushBack = canPushBack;
+	mCanBePushedBack = canBePushedBack;
 
 	if (topLeftCollOffset.x + bottomRightCollOffset.x > mSize.x) {
 		printf("Warning: Entity horizontal collision offset set too large. "
@@ -80,7 +85,7 @@ void Entity::CheckCollision() {
 			other->OnCollision(this);
 			OnCollision(other);
 
-			if (other->mCanBePushedBack) {
+			if (mCanPushBack && other->mCanBePushedBack) {
 				if (rightDist > leftDist && rightDist > bottomDist && rightDist > topDist) {
 					if (other->mPushbackSides & 1 << 0) {
 						mPos.x += collisionWidth - rightDist;
@@ -114,7 +119,7 @@ void Entity::CheckCollision() {
 					}
 				}
 			}
-			else if (mCanBePushedBack) {
+			else if (mCanBePushedBack && other->mCanPushBack) {
 				if (rightDist > leftDist && rightDist > bottomDist && rightDist > topDist) {
 					mPos.x += collisionWidth - rightDist;
 				}

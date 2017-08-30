@@ -3,6 +3,7 @@
 #include "World.h"
 #include "Player.h"
 #include "Camera.h"
+#include "MoveTrigger.h"
 
 #define CAMERA_MODE Camera::Mode::PAN
 #define SHOW_COLLIDERS true
@@ -23,6 +24,7 @@ namespace {
 	Player player;
 	Sprite tree;
 	Sprite boulder;
+	MoveTrigger moveTrigger;
 }
 
 void InitEntities() {
@@ -37,14 +39,16 @@ void InitEntities() {
 	sdlInit.LoadTexture(boulder);
 
 	//Setting position information...
-	player.SetPosition(0, 0);
-	tree.SetPosition(200, 300);
-	boulder.SetPosition(200, 150);
+	player.SetPosition({0, 0});
+	tree.SetPosition({200, 300});
+	boulder.SetPosition({200, 150});
+	moveTrigger.SetPosition({300, 150});
 
 	//Setting size information...
-	player.SetSpriteSize(70, 70);
-	tree.SetSpriteSize(64, 78);
-	boulder.SetSpriteSize(45, 45);
+	player.SetSize(70, 70);
+	tree.SetSize(64, 78);
+	boulder.SetSize(45, 45);
+	moveTrigger.SetSize(45, 45);
 
 	//Set sprite sheet texture coordinates...
 	player.InitSpriteSheet(0, 14, 6);
@@ -75,15 +79,19 @@ void InitEntities() {
 	player.SetAnchorOffset({-11, -13}, 35);			//first right attack...=>2
 
 	//Setup collision...
-	player.ConfigureCollision(true, { 5, 14 }, { 35, 16 });
-	tree.ConfigureCollision(false);
-	boulder.ConfigureCollision(true);
+	player.ConfigureCollision(true, true, { 0, 14 }, { 35, 16 });
+	tree.ConfigureCollision(true, false);
+	boulder.ConfigureCollision(false, true);
+	moveTrigger.ConfigureCollision(false, false);
 
 	player.AddCollidableEntity(tree);
 	player.AddCollidableEntity(boulder);
+	player.AddCollidableEntity(moveTrigger);
+
+	moveTrigger.SetMovePos({960, 200});
 
 	//TODO: Don't hard-code this...
-	gWorld.InitWorldGrid({ 5, 70 - 35, 14, 70 - 16});
+	gWorld.InitWorldGrid({ 0, 70 - 35, 14, 70 - 16});
 }
 
 bool GameManager::Init(){
@@ -125,6 +133,7 @@ void GameManager::Render(){
 
 	//Needs to come last...
 	if (SHOW_COLLIDERS) {
+		sdlInit.DrawEntityCollider(moveTrigger);
 		sdlInit.DrawEntityCollider(tree);
 		sdlInit.DrawEntityCollider(boulder);
 		sdlInit.DrawEntityCollider(player);

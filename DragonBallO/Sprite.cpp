@@ -18,10 +18,6 @@ void Sprite::SetTexturePath(const char* texturePath) {
 	mTexturePath = texturePath;
 }
 
-void Sprite::SetSpriteSize(int width, int height) {
-	mSize = { width, height };
-}
-
 void Sprite::InitSpriteSheet(UInt startClipIndex, UInt numSpriteCLipsX, UInt numSpriteClipsY) {
 	if (numSpriteCLipsX == 0 || numSpriteClipsY == 0) {
 		printf("Number of sprite clips must be at least 1.");
